@@ -473,7 +473,12 @@ def _mostrar_arranque(puerto):
 
 if __name__ == "__main__":
     PUERTO = int(os.getenv("PORT", "5000"))
+    # En Railway y otras plataformas en la nube, el host debe ser 0.0.0.0
+    # para escuchar conexiones externas. En local sigue funcionando igual.
+    HOST = "0.0.0.0" if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("PORT") else "127.0.0.1"
     _mostrar_arranque(PUERTO)
 
-    Timer(1.0, lambda: webbrowser.open(f"http://127.0.0.1:{PUERTO}")).start()
-    app.run(host="127.0.0.1", port=PUERTO, debug=False, use_reloader=False)
+    # Solo abrir el navegador automaticamente en local, no en Railway
+    if HOST == "127.0.0.1":
+        Timer(1.0, lambda: webbrowser.open(f"http://127.0.0.1:{PUERTO}")).start()
+    app.run(host=HOST, port=PUERTO, debug=False, use_reloader=False)

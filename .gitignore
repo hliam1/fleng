@@ -6,10 +6,14 @@ venv/
 __pycache__/
 *.pyc
 
-# Audio temporal (ya no se usa, pero por si acaso)
+# Audio temporal
 static/audio/*
 !static/audio/.gitkeep
 
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Las imágenes SÍ se incluyen en el repositorio para que Railway
+# las tenga disponibles sin configuración adicional.
+# !static/images/
