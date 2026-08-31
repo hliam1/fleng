@@ -1,0 +1,92 @@
+IMAGENES DE FLENG
+======================================================================
+
+Todas las piezas visuales son archivos PNG sueltos en esta carpeta.
+Para cambiar cualquiera: sobrescribe el archivo con el mismo nombre.
+No hay que tocar codigo, ni CSS, ni plantillas. Recarga con Ctrl+F5.
+
+Usa PNG con fondo transparente. Los nombres deben coincidir EXACTO,
+en minusculas y sin espacios.
+
+
+OBLIGATORIAS
+----------------------------------------------------------------------
+Sin estas la interfaz se ve incompleta y la app avisa al arrancar.
+
+  flenglogo.png
+      Icono de Fleng. Barra superior, a la izquierda del titulo.
+
+  flengimgbocacerrada.png
+      Avatar callado. Es el estado normal.
+
+  flengimgbocaabierta.png
+      Avatar hablando. Alterna con la anterior segun el volumen.
+
+
+OPCIONALES
+----------------------------------------------------------------------
+Si no las pones, la app funciona igual y se adapta sola.
+
+  flengtitulo.png
+      Titulo 'Fleng' como imagen. Si falta, se escribe con tipografia.
+
+  flengfavicon.png
+      Icono de la pestana del navegador. Si falta, se usa el logo.
+
+  flengfeliz.png
+      Avatar contento. Aparece al terminar una evaluacion con buena nota.
+
+  flengpensando.png
+      Avatar mientras se genera la respuesta. Si falta, se usa boca cerrada.
+
+  flengbandera-es.png
+      Simbolo del espanol en el selector de idioma.
+
+  flengbandera-en.png
+      Simbolo del ingles en el selector de idioma.
+
+
+TAMANOS RECOMENDADOS
+----------------------------------------------------------------------
+
+  flenglogo.png          cuadrada, 200 x 200 px
+  flengtitulo.png        apaisada, unos 600 x 160 px
+  flengfavicon.png       cuadrada, 64 x 64 px
+  flengimgboca*.png      cuadrada, 500 x 500 px, mismo encuadre
+  flengfeliz.png         igual que las de boca
+  flengpensando.png      igual que las de boca
+  flengbandera-*.png     apaisada pequena, unos 60 x 40 px
+
+
+DETALLES QUE IMPORTAN
+----------------------------------------------------------------------
+
+  · Las dos imagenes de boca deben tener el MISMO encuadre y tamano.
+    Si el buho cambia de sitio entre una y otra, al hablar da saltos.
+
+  · flengtitulo.png sustituye al texto "Fleng" de la barra superior.
+    Si la pones, se muestra la imagen; si la quitas, vuelve el texto.
+    Recortala pegada al texto, sin margen blanco alrededor.
+
+  · flengfeliz.png aparece unos segundos al terminar una evaluacion
+    con 70 puntos o mas. Si no existe, no pasa nada.
+
+  · Si cambias una imagen y no ves el cambio, recarga con Ctrl+F5:
+    el navegador guarda las imagenes en cache.
+
+
+ESTADO ACTUAL DE ESTA CARPETA
+----------------------------------------------------------------------
+
+  [FALTA]   flenglogo.png
+  [puesta]  flengtitulo.png
+  [  --  ]  flengfavicon.png
+  [FALTA]   flengimgbocacerrada.png
+  [FALTA]   flengimgbocaabierta.png
+  [  --  ]  flengfeliz.png
+  [  --  ]  flengpensando.png
+  [  --  ]  flengbandera-es.png
+  [  --  ]  flengbandera-en.png
+
+  [puesta] = el archivo esta   [FALTA] = obligatoria sin poner
+  [  --  ] = opcional sin poner

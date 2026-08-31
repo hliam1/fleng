@@ -1,0 +1,15 @@
+# Claves de API. NUNCA subir este archivo.
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Audio temporal (ya no se usa, pero por si acaso)
+static/audio/*
+!static/audio/.gitkeep
+
+# Sistema
+.DS_Store
+Thumbs.db
