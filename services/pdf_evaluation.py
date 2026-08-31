@@ -171,7 +171,6 @@ def generar_pdf(evaluacion, idioma, turnos=0):
         if pose:
             # Titulo + texto juntos en la celda izquierda, ilustración a la
             # derecha. Así no hay espacio en blanco entre título y texto.
-            from reportlab.platypus import KeepTogether
             celda_izq = [
                 Paragraph(ESC(titulo), st_section),
                 Paragraph(ESC(texto), st_body),
