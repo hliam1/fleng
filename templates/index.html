@@ -56,6 +56,7 @@
       <button type="button" class="mode-tab" data-mode="translator" role="tab" aria-selected="false" data-i18n="tab_translator">Traductor</button>
       <button type="button" class="mode-tab" data-mode="dictation" role="tab" aria-selected="false" data-i18n="tab_dictation">Dictado</button>
       <button type="button" class="mode-tab" data-mode="conversation" role="tab" aria-selected="false" data-i18n="tab_conversation">Conversación</button>
+      <button type="button" class="mode-tab" data-mode="mediator" role="tab" aria-selected="false" data-i18n="tab_mediator">Mediador</button>
     </nav>
 
   </header>
@@ -182,6 +183,67 @@
         </form>
 
         <div id="evaluation-panel" class="evaluation-panel hidden"></div>
+      </div>
+
+      <!-- ============================ MEDIADOR ============================ -->
+      <!-- Dos personas, dos idiomas: cada una tiene su boton. Fleng traduce
+           en tiempo real entre las dos. El historial queda visible para que
+           se pueda repasar la conversacion sin volver a hablar. -->
+      <div id="mediator-view" class="mode-view hidden">
+
+        <div class="mediator-intro">
+          <p class="eyebrow" data-i18n="mediator_intro_label">Modo mediador</p>
+          <p class="mediator-intro-text" data-i18n="mediator_intro_text">
+            Dos personas, dos idiomas. Cada una pulsa su botón para hablar o
+            escribir; Fleng traduce y lo lee en el otro idioma.
+          </p>
+        </div>
+
+        <div id="mediator-history" class="mediator-history">
+          <p class="empty-state" id="mediator-empty-state" data-i18n="mediator_empty">
+            Nadie ha hablado todavía. Pulsa uno de los dos botones para empezar.
+          </p>
+        </div>
+
+        <!-- Dos "carriles" (uno espanol y otro ingles) para que quede claro
+             cual usa cada persona. Cada carril tiene su microfono y su
+             cajita de texto: mas intuitivo que un solo boton con selector. -->
+        <div class="mediator-lanes">
+
+          <div class="mediator-lane mediator-lane--es">
+            <div class="mediator-lane-head">
+              <span class="mediator-flag" aria-hidden="true">🇪🇸</span>
+              <span class="mediator-lane-label" data-i18n="mediator_speaker_es">Habla en español</span>
+            </div>
+            <button type="button" id="mediator-mic-es" class="mic-button mic-button--small" aria-label="Hablar en español">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </button>
+            <form id="mediator-text-form-es" class="text-input-row mediator-text-row">
+              <input type="text" id="mediator-text-input-es" placeholder="O escribe en español…" data-i18n-placeholder="mediator_ph_es" autocomplete="off">
+              <button type="submit" class="send-btn" data-i18n="send">Enviar</button>
+            </form>
+          </div>
+
+          <div class="mediator-lane mediator-lane--en">
+            <div class="mediator-lane-head">
+              <span class="mediator-flag" aria-hidden="true">🇬🇧</span>
+              <span class="mediator-lane-label" data-i18n="mediator_speaker_en">Speak in English</span>
+            </div>
+            <button type="button" id="mediator-mic-en" class="mic-button mic-button--small" aria-label="Speak in English">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </button>
+            <form id="mediator-text-form-en" class="text-input-row mediator-text-row">
+              <input type="text" id="mediator-text-input-en" placeholder="Or type in English…" data-i18n-placeholder="mediator_ph_en" autocomplete="off">
+              <button type="submit" class="send-btn" data-i18n="send">Send</button>
+            </form>
+          </div>
+
+        </div>
+
+        <div class="mediator-actions">
+          <button type="button" id="mediator-clear" class="text-btn" data-i18n="mediator_clear">Limpiar historial</button>
+        </div>
+
       </div>
 
     </section>

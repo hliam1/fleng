@@ -142,6 +142,17 @@ document.addEventListener('DOMContentLoaded', () => {
     es: {
       tab_tutorial: 'Tutorial', tab_translator: 'Traductor',
       tab_dictation: 'Dictado', tab_conversation: 'Conversación',
+      tab_mediator: 'Mediador',
+      mediator_intro_label: 'Modo mediador',
+      mediator_intro_text: 'Dos personas, dos idiomas. Cada una pulsa su botón para hablar o escribir; Fleng traduce y lo lee en el otro idioma.',
+      mediator_empty: 'Nadie ha hablado todavía. Pulsa uno de los dos botones para empezar.',
+      mediator_speaker_es: 'Habla en español',
+      mediator_speaker_en: 'Habla en inglés',
+      mediator_ph_es: 'O escribe en español…',
+      mediator_ph_en: 'O escribe en inglés…',
+      mediator_clear: 'Limpiar historial',
+      mediator_original: 'Dijo', mediator_translated: 'Traducción',
+      mediator_conn_error: 'No se pudo conectar con el servidor.',
       origin_title: 'Origen del idioma', basic_concepts: 'Conceptos básicos',
       reset_progress: 'Reiniciar progreso', history: 'Historial',
       clear_history: 'Limpiar historial', talk_about: 'Sobre qué quieres hablar',
@@ -193,6 +204,17 @@ document.addEventListener('DOMContentLoaded', () => {
     en: {
       tab_tutorial: 'Tutorial', tab_translator: 'Translator',
       tab_dictation: 'Dictation', tab_conversation: 'Conversation',
+      tab_mediator: 'Mediator',
+      mediator_intro_label: 'Mediator mode',
+      mediator_intro_text: 'Two people, two languages. Each one taps their button to speak or type; Fleng translates and reads it back in the other language.',
+      mediator_empty: 'No one has spoken yet. Tap one of the two buttons to start.',
+      mediator_speaker_es: 'Speak in Spanish',
+      mediator_speaker_en: 'Speak in English',
+      mediator_ph_es: 'Or type in Spanish…',
+      mediator_ph_en: 'Or type in English…',
+      mediator_clear: 'Clear history',
+      mediator_original: 'Said', mediator_translated: 'Translation',
+      mediator_conn_error: 'Could not connect to the server.',
       origin_title: 'Language origin', basic_concepts: 'Basic concepts',
       reset_progress: 'Reset progress', history: 'History',
       clear_history: 'Clear history', talk_about: 'What do you want to talk about',
@@ -375,6 +397,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ------------------------------ Cambio de modo ------------------------------ */
 
+  const mediatorViewEl = document.getElementById('mediator-view');
+
   modeTabs.forEach((tab) => {
     tab.addEventListener('click', () => {
       if (isProcessing || tab.dataset.mode === currentMode) return;
@@ -388,6 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
       translatorViewEl.classList.toggle('hidden', currentMode !== 'translator');
       dictationViewEl.classList.toggle('hidden', currentMode !== 'dictation');
       conversationViewEl.classList.toggle('hidden', currentMode !== 'conversation');
+      mediatorViewEl.classList.toggle('hidden', currentMode !== 'mediator');
     });
   });
 
@@ -627,14 +652,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Pide al servidor la voz de un texto. Lo usa el boton de repetir y el
   // historial, para no tener que guardar el audio en el navegador.
-  async function speakText(text, language) {
+  //
+  // opciones.slow: cuando true, se pide una lectura mas lenta. Se usa en el
+  // tutorial para que un principiante distinga cada palabra.
+  async function speakText(text, language, opciones = {}) {
     if (!text) return;
     setStatus(t('status_speaking'));
     try {
+      const cuerpo = { text, language };
+      if (opciones.slow) cuerpo.slow = true;
       const response = await fetch('/api/speak', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language }),
+        body: JSON.stringify(cuerpo),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -1197,7 +1227,9 @@ document.addEventListener('DOMContentLoaded', () => {
       escuchar.className = 'icon-btn';
       escuchar.textContent = t('listen');
       escuchar.addEventListener('click', () => {
-        speakText(entrada.texto, practiceLanguage);
+        // Las frases del tutorial se leen mas despacio para que un
+        // principiante pueda distinguir cada palabra.
+        speakText(entrada.texto, practiceLanguage, { slow: true });
       });
 
       const marcar = document.createElement('button');
@@ -1855,6 +1887,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setProcessing(true);
     setStatus(audioBlob ? t('status_processing') : t('status_thinking'));
 
+    // Indicador de escritura tipo WhatsApp dentro del chat. El avatar
+    // "pensando" ya existe pero no se ve en movil (avatar oculto), asi
+    // que hace falta una senal visual dentro del propio historial.
+    ensureChatListReady();
+    if (text) {
+      // Si hay texto ya escrito, se muestra la burbuja del usuario en el
+      // acto; el typing bubble aparece pegado a ella. Con audio se espera
+      // a tener la transcripcion (llega en data.user_text).
+      appendChatBubble('user', text, null, null);
+    }
+    mostrarTypingBubble();
+
     try {
       const formData = new FormData();
       formData.append('practice_language', practiceLanguage);
@@ -1869,14 +1913,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/conversation', { method: 'POST', body: formData });
       const data = await response.json();
 
+      quitarTypingBubble();
+
       if (!response.ok) {
         showToast(data.error || 'Ocurrió un error en la conversación.', true);
         setStatus(t('ready'));
         return;
       }
 
-      ensureChatListReady();
-      appendChatBubble('user', data.user_text, null, null);
+      // Si el turno venia por voz, la burbuja del usuario aun no existe
+      // (se necesitaba la transcripcion). Se agrega ahora, antes de la
+      // respuesta, para conservar el orden cronologico.
+      if (!text) {
+        appendChatBubble('user', data.user_text, null, null);
+      }
       appendChatBubble('assistant', data.ai_text, data.translated_text, practiceLanguage);
 
       conversationHistory = data.history;
@@ -1886,12 +1936,38 @@ document.addEventListener('DOMContentLoaded', () => {
       setStatus(t('status_speaking'));
       playAudioBase64(data.audio_base64, data.audio_mime, data.ai_text, practiceLanguage);
     } catch (err) {
+      quitarTypingBubble();
       console.error(err);
       showToast('No se pudo conectar con el servidor. Verifica que esté en ejecución.', true);
       setStatus(t('ready'));
     } finally {
       setProcessing(false);
     }
+  }
+
+  /* --------------------- Typing indicator (WhatsApp-style) ---------------------
+     Se inserta como una burbuja mas del chat, del lado del asistente, con
+     tres puntitos animados. Se quita en cuanto llega la respuesta o falla la
+     peticion. Visible en movil, que es cuando el avatar pensante no se ve.
+  */
+  function mostrarTypingBubble() {
+    // Solo debe haber uno a la vez.
+    quitarTypingBubble();
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble assistant chat-bubble--typing';
+    bubble.id = 'chat-typing-bubble';
+    bubble.setAttribute('aria-label', t('status_thinking'));
+    const dots = document.createElement('div');
+    dots.className = 'typing-dots';
+    dots.innerHTML = '<span></span><span></span><span></span>';
+    bubble.appendChild(dots);
+    chatMessagesEl.appendChild(bubble);
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+  }
+
+  function quitarTypingBubble() {
+    const existente = document.getElementById('chat-typing-bubble');
+    if (existente) existente.remove();
   }
 
   function ensureChatListReady() {
@@ -2213,6 +2289,188 @@ const newBtn = document.createElement('button');
     if (!visto) abrirModalIdioma();
   }
 
+  /* ============================================================
+     MEDIADOR
+
+     Dos personas hablan idiomas distintos y Fleng traduce entre
+     las dos. A diferencia del traductor, la direccion no esta
+     fijada: cada carril (uno en espanol, otro en ingles) decide
+     su propia direccion al pulsar su boton. Los dos carriles
+     comparten el mismo historial visible.
+
+     No hay evaluacion, no toca practiceLanguage y no reinicia
+     conversation history. Es un modo independiente pensado para
+     que dos personas (por ejemplo, un turista y un local) se
+     entiendan sin retroalimentacion pedagogica.
+     ============================================================ */
+
+  const mediatorHistoryEl = document.getElementById('mediator-history');
+  const mediatorMicEsBtn = document.getElementById('mediator-mic-es');
+  const mediatorMicEnBtn = document.getElementById('mediator-mic-en');
+  const mediatorTextFormEs = document.getElementById('mediator-text-form-es');
+  const mediatorTextFormEn = document.getElementById('mediator-text-form-en');
+  const mediatorTextInputEs = document.getElementById('mediator-text-input-es');
+  const mediatorTextInputEn = document.getElementById('mediator-text-input-en');
+  const mediatorClearBtn = document.getElementById('mediator-clear');
+  const MEDIATOR_HISTORY_KEY = 'fleng_mediator_history';
+
+  let mediatorHistory = leerJSON(MEDIATOR_HISTORY_KEY, []);
+
+  function renderMediator() {
+    mediatorHistoryEl.innerHTML = '';
+    if (mediatorHistory.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'empty-state';
+      empty.id = 'mediator-empty-state';
+      empty.textContent = t('mediator_empty');
+      mediatorHistoryEl.appendChild(empty);
+      return;
+    }
+    mediatorHistory.forEach((turno) => {
+      mediatorHistoryEl.appendChild(construirBurbujaMediador(turno));
+    });
+    mediatorHistoryEl.scrollTop = mediatorHistoryEl.scrollHeight;
+  }
+
+  function construirBurbujaMediador(turno) {
+    const bubble = document.createElement('div');
+    bubble.className = 'mediator-bubble mediator-bubble--' + turno.speaker_lang;
+
+    const head = document.createElement('div');
+    head.className = 'mediator-bubble-head';
+    const banderaOrigen = turno.speaker_lang === 'es' ? '🇪🇸' : '🇬🇧';
+    const banderaDestino = turno.target_lang === 'es' ? '🇪🇸' : '🇬🇧';
+    head.textContent = banderaOrigen + '  →  ' + banderaDestino;
+    bubble.appendChild(head);
+
+    // Lo dicho en el idioma original
+    const textEl = document.createElement('p');
+    textEl.className = 'mediator-bubble-text';
+    textEl.textContent = turno.original_text;
+    bubble.appendChild(textEl);
+
+    // Traduccion como referencia (mismo formato que en el chat)
+    if (turno.translated_text) {
+      const tradEl = document.createElement('p');
+      tradEl.className = 'mediator-bubble-translation';
+      tradEl.textContent = turno.translated_text;
+      bubble.appendChild(tradEl);
+    }
+
+    // Boton para volver a escuchar la traduccion. La voz del turno no se
+    // guarda (ocuparia demasiado en localStorage), asi que se pide de
+    // nuevo con /api/speak.
+    const replay = document.createElement('button');
+    replay.type = 'button';
+    replay.className = 'icon-btn';
+    replay.textContent = t('repeat_audio');
+    replay.addEventListener('click', () => {
+      if (turno.translated_text) speakText(turno.translated_text, turno.target_lang);
+    });
+    bubble.appendChild(replay);
+
+    return bubble;
+  }
+
+  function guardarHistorialMediador() {
+    // Limite de 40 turnos para que el localStorage no crezca sin fin, en
+    // linea con los otros historiales del proyecto.
+    if (mediatorHistory.length > 40) {
+      mediatorHistory = mediatorHistory.slice(mediatorHistory.length - 40);
+    }
+    guardarJSON(MEDIATOR_HISTORY_KEY, mediatorHistory);
+  }
+
+  async function enviarTurnoMediador({ speakerLang, text, audioBlob }) {
+    if (isProcessing) return;
+    setProcessing(true);
+    setStatus(audioBlob ? t('status_processing') : t('status_translating'));
+
+    try {
+      const formData = new FormData();
+      formData.append('speaker_lang', speakerLang);
+      formData.append('target_lang', speakerLang === 'es' ? 'en' : 'es');
+      if (audioBlob) {
+        formData.append('audio', audioBlob, `recording.${extensionForMimeType(audioBlob.type)}`);
+      } else {
+        formData.append('text', text);
+      }
+
+      const response = await fetch('/api/mediate', { method: 'POST', body: formData });
+      const data = await response.json();
+
+      if (!response.ok) {
+        showToast(data.error || t('mediator_conn_error'), true);
+        setStatus(t('ready'));
+        return;
+      }
+
+      // Guardar el turno y volver a pintar el historial completo. Es mas
+      // simple y suficientemente rapido con el limite de 40 turnos.
+      mediatorHistory.push({
+        speaker_lang: data.speaker_lang,
+        target_lang: data.target_lang,
+        original_text: data.original_text,
+        translated_text: data.translated_text,
+        ts: Date.now(),
+      });
+      guardarHistorialMediador();
+      renderMediator();
+
+      registrarActividad();
+
+      // La otra persona escucha la traduccion sin pulsar nada mas: es la
+      // razon de ser del modo mediador.
+      setStatus(t('status_speaking'));
+      playAudioBase64(data.audio_base64, data.audio_mime, data.translated_text, data.target_lang);
+
+    } catch (err) {
+      console.error(err);
+      showToast(t('mediator_conn_error'), true);
+      setStatus(t('ready'));
+    } finally {
+      setProcessing(false);
+    }
+  }
+
+  // Botones de microfono: se reusa attachHoldToRecord con un idioma
+  // distinto por carril, asi cada persona pulsa su propio boton.
+  // attachHoldToRecord llama a onResult con {text} (STT del navegador) o
+  // {blob} (audio grabado para transcribir en el servidor).
+  attachHoldToRecord(
+    mediatorMicEsBtn,
+    ({ text, blob }) => enviarTurnoMediador({ speakerLang: 'es', text, audioBlob: blob }),
+    () => 'es',
+  );
+  attachHoldToRecord(
+    mediatorMicEnBtn,
+    ({ text, blob }) => enviarTurnoMediador({ speakerLang: 'en', text, audioBlob: blob }),
+    () => 'en',
+  );
+
+  // Envio por texto: cada carril tiene su form, con su propio idioma.
+  mediatorTextFormEs.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const text = mediatorTextInputEs.value.trim();
+    if (!text || isProcessing) return;
+    mediatorTextInputEs.value = '';
+    enviarTurnoMediador({ speakerLang: 'es', text });
+  });
+  mediatorTextFormEn.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const text = mediatorTextInputEn.value.trim();
+    if (!text || isProcessing) return;
+    mediatorTextInputEn.value = '';
+    enviarTurnoMediador({ speakerLang: 'en', text });
+  });
+
+  mediatorClearBtn.addEventListener('click', () => {
+    if (mediatorHistory.length === 0) return;
+    mediatorHistory = [];
+    guardarHistorialMediador();
+    renderMediator();
+  });
+
   renderTranslationHistory();
   renderDictationHistory();
   updateFinishButtonState();
@@ -2220,5 +2478,6 @@ const newBtn = document.createElement('button');
   renderTemas();
   loadTutorial();
   setupLanguageHelp();
+  renderMediator();
   checkStatus();
 });

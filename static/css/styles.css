@@ -563,6 +563,35 @@ button, input { font-family: inherit; }
   padding-top: 9px;
 }
 
+/* Burbuja "escribiendo" al estilo WhatsApp: 3 puntitos animados. Se pinta
+   como una chat-bubble.assistant normal para que se coloque igual, pero
+   sin borde ni gap; solo los puntos. Es la senal visible en movil, donde
+   el avatar pensante no aparece en pantalla. */
+.chat-bubble--typing {
+  padding: 14px 18px;
+  min-height: 0;
+}
+.typing-dots {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  height: 12px;
+}
+.typing-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-300, #b7bac2);
+  opacity: 0.4;
+  animation: typing-bounce 1.2s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0);    opacity: 0.4; }
+  30%           { transform: translateY(-5px); opacity: 1;   }
+}
+
 .chat-input-row {
   display: flex;
   align-items: center;
@@ -584,6 +613,142 @@ button, input { font-family: inherit; }
 }
 .chat-input-row input::placeholder { color: var(--ink-500); }
 .chat-input-row input:focus { border-color: var(--sky); }
+
+/* ------------------------------ Mediador ------------------------------
+   Modo con dos "carriles" (uno para cada idioma) que comparten el mismo
+   historial. Cada carril tiene su propio microfono y su cajita de texto:
+   los dos usuarios usan los suyos sin cambiar ningun ajuste.
+*/
+.mediator-intro {
+  padding: 4px 2px 0;
+}
+.mediator-intro-text {
+  margin: 4px 0 0;
+  color: var(--ink-300);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.mediator-history {
+  flex: 1;
+  min-height: 220px;
+  max-height: 55vh;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.mediator-bubble {
+  max-width: 82%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14.5px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--line);
+}
+
+/* Colores distintos para que se identifique de un vistazo quien hablo.
+   Espanol -> lado izquierdo, tonos calidos; ingles -> lado derecho, azul. */
+.mediator-bubble--es {
+  align-self: flex-start;
+  background: linear-gradient(135deg, rgba(255, 140, 90, 0.22), rgba(255, 80, 120, 0.18));
+  border-bottom-left-radius: 4px;
+}
+.mediator-bubble--en {
+  align-self: flex-end;
+  background: linear-gradient(135deg, rgba(90, 140, 255, 0.22), rgba(120, 90, 255, 0.18));
+  border-bottom-right-radius: 4px;
+}
+
+.mediator-bubble-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-300);
+  font-weight: 700;
+}
+.mediator-bubble-text {
+  margin: 0;
+  color: var(--white);
+}
+.mediator-bubble-translation {
+  margin: 0;
+  color: var(--ink-200, #cbd0d9);
+  font-size: 13px;
+  font-style: italic;
+  border-top: 1px dashed var(--line);
+  padding-top: 8px;
+}
+.mediator-bubble .icon-btn {
+  align-self: flex-start;
+}
+
+/* Los dos carriles: uno para el hablante espanol, otro para el ingles.
+   En pantalla ancha van lado a lado; en movil se apilan. */
+.mediator-lanes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.mediator-lane {
+  background: rgba(0, 0, 0, 0.24);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mediator-lane--es {
+  border-color: rgba(255, 140, 90, 0.35);
+  box-shadow: inset 3px 0 0 0 rgba(255, 140, 90, 0.5);
+}
+.mediator-lane--en {
+  border-color: rgba(90, 140, 255, 0.35);
+  box-shadow: inset -3px 0 0 0 rgba(90, 140, 255, 0.5);
+}
+
+.mediator-lane-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white);
+}
+.mediator-flag { font-size: 20px; line-height: 1; }
+.mediator-lane-label { flex: 1; }
+
+.mediator-lane .mic-button {
+  align-self: center;
+}
+
+.mediator-text-row { margin-top: 4px; }
+
+.mediator-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+/* En movil, los dos carriles ocupan todo el ancho y se apilan. */
+@media (max-width: 700px) {
+  .mediator-lanes { grid-template-columns: 1fr; }
+  .mediator-bubble { max-width: 92%; }
+}
 
 /* ----------------------------- Evaluacion ----------------------------- */
 
@@ -1415,4 +1580,143 @@ button:focus-visible, input:focus-visible {
 .text-input-row input:focus {
   outline: none;
   border-color: rgba(245, 126, 34, 0.5);
+}
+
+/* ==========================================================================
+   OPTIMIZACIÓN MÓVIL
+   Pantallas angostas (menos de 600px): teléfonos con pantalla pequeña.
+   El objetivo es que todo quepa sin scroll horizontal y sin recortes.
+   ========================================================================== */
+
+@media (max-width: 600px) {
+
+  /* La barra superior se reorganiza en dos filas compactas */
+  .topbar {
+    padding: 8px 12px 0;
+    gap: 6px;
+  }
+
+  .topbar-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* El logo + nombre más pequeños */
+  .brand-logo { height: 28px; width: 28px; }
+  .brand-name { font-size: 22px; }
+  .brand-title { height: 26px; }
+
+  /* Los botones de idioma más compactos */
+  .lang-btn {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+
+  /* La racha se oculta en pantallas muy pequeñas para dar espacio */
+  .streak-strip { display: none; }
+
+  /* Las pestañas más pequeñas y sin que se corten */
+  .mode-switch {
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mode-switch::-webkit-scrollbar { display: none; }
+
+  .mode-tab {
+    font-size: 12px;
+    padding: 6px 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* El panel principal en columna, sin el avatar encima */
+  .main-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: calc(100vh - var(--topbar-height));
+  }
+
+  /* El avatar más pequeño en móvil */
+  .avatar-panel {
+    padding: 16px 16px 8px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-height: auto;
+  }
+
+  .avatar-stage {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+  }
+
+  .avatar-img { max-width: 80px; max-height: 80px; }
+
+  /* Estado y controles del avatar en fila */
+  .avatar-panel > :not(.avatar-stage) {
+    display: inline-flex;
+  }
+
+  /* El panel de contenido sin margen exagerado */
+  .content-panel {
+    margin: 0 10px 12px;
+    padding: 14px;
+    gap: 12px;
+  }
+
+  /* La zona del micrófono más compacta */
+  .mic-zone { gap: 8px; padding: 12px; }
+  .mic-button { width: 64px; height: 64px; }
+  .mic-button svg { width: 26px; height: 26px; }
+
+  /* Las tarjetas de conceptos en 2 columnas */
+  .concept-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  /* El panel de evaluación en columna */
+  .evaluation-grid { grid-template-columns: 1fr; gap: 12px; }
+
+  /* El input de texto ancho completo */
+  .text-input-row { flex-direction: column; gap: 6px; }
+  .text-input-row input { width: 100%; }
+  .text-input-row .send-btn { width: 100%; }
+
+  /* Los temas de conversación con scroll horizontal */
+  .topic-switch {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .topic-chip { flex-shrink: 0; }
+
+  /* El modal más compacto */
+  .modal-card { padding: 18px; }
+  .modal-demo { flex-wrap: wrap; gap: 6px; }
+  .modal-steps li { font-size: 13px; }
+
+  /* El área de chat */
+  .chat-list { gap: 8px; }
+  .chat-input-row { padding: 8px; gap: 6px; }
+
+  /* La grilla de evaluación de palabras */
+  .review-list { gap: 5px; }
+}
+
+/* Pantallas muy pequeñas (menos de 380px: iPhone SE, teléfonos viejos) */
+@media (max-width: 380px) {
+  .lang-btn { padding: 6px 10px; font-size: 12px; }
+  .mode-tab { font-size: 11px; padding: 5px 8px; }
+  .content-panel { margin: 0 6px 10px; padding: 10px; }
+  .concept-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .concept-card { padding: 12px 8px; }
+  .concept-card .concept-icon { width: 34px; height: 34px; font-size: 15px; }
+  .concept-card .concept-name { font-size: 12px; }
 }
