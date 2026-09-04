@@ -1,0 +1,7 @@
+flask>=3.0
+python-dotenv>=1.0
+requests>=2.31
+reportlab>=4.0
+
+# Solo si usas Gemini (STT_PROVIDER, LLM_PROVIDER o TTS_PROVIDER = gemini):
+#   pip install google-genai

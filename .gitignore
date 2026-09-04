@@ -1,0 +1,19 @@
+# Claves de API. NUNCA subir este archivo.
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Audio temporal
+static/audio/*
+!static/audio/.gitkeep
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Las imágenes SÍ se incluyen en el repositorio para que Railway
+# las tenga disponibles sin configuración adicional.
+# !static/images/
