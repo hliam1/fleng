@@ -178,6 +178,9 @@ def api_speak():
     datos = request.get_json(silent=True) or {}
     texto = (datos.get("text") or "").strip()
     idioma = datos.get("language", "en")
+    # slow=True lo pide el frontend cuando el usuario escucha frases del
+    # tutorial: se leen mas despacio para que se distinga cada palabra.
+    lento = bool(datos.get("slow", False))
 
     if not texto:
         return _error("No hay texto que leer.", 400)
@@ -187,7 +190,7 @@ def api_speak():
     sw = clients.Stopwatch()
     try:
         with sw.stage("tts"):
-            voz = text_to_speech.synthesize_speech(texto, idioma)
+            voz = text_to_speech.synthesize_speech(texto, idioma, slow=lento)
         sw.log("POST /api/speak")
         return jsonify({
             "audio_base64": voz["audio_base64"],
@@ -413,6 +416,92 @@ def api_evaluation_pdf():
         )
     except Exception as error:
         logger.error("/api/evaluation/pdf: %s", error)
+        return _error(str(error)[:200], 502)
+
+
+@app.route("/api/mediate", methods=["POST"])
+def api_mediate():
+    """
+    Modo mediador: dos personas hablan idiomas distintos y Fleng traduce
+    entre las dos.
+
+    Recibe:
+      · speaker_lang: "es" o "en" (el idioma en el que se habla)
+      · text (opcional) o audio (opcional): lo que dijo el hablante
+      · target_lang (opcional): forzar el idioma de destino; por defecto
+        es el contrario a speaker_lang. Es lo natural en un mediador
+        (ES habla -> traducimos a EN; y viceversa).
+
+    Devuelve el texto en los dos idiomas + audio en el de destino, para
+    que la otra persona escuche la traduccion sin pulsar nada mas.
+
+    A diferencia de /api/translate esta ruta no tiene "direccion fija":
+    cada turno decide su idioma. Asi los dos usuarios usan los mismos
+    botones sin tocar ajustes.
+    """
+    fallo = _revisar_configuracion()
+    if fallo:
+        return fallo
+
+    idioma_hablante = request.form.get("speaker_lang", "es")
+    if idioma_hablante not in IDIOMAS_VALIDOS:
+        return _error("Idioma del hablante invalido.", 400)
+
+    # Por defecto se traduce al idioma contrario. Solo se acepta un
+    # target explicito si es distinto al del hablante.
+    idioma_destino = request.form.get("target_lang")
+    if idioma_destino not in IDIOMAS_VALIDOS or idioma_destino == idioma_hablante:
+        idioma_destino = "en" if idioma_hablante == "es" else "es"
+
+    sw = clients.Stopwatch()
+
+    try:
+        texto_original = (request.form.get("text") or "").strip()
+
+        if texto_original:
+            with sw.stage("translate"):
+                texto_traducido = translator.translate_text(
+                    texto_original, idioma_hablante, idioma_destino
+                )
+        else:
+            archivo = request.files.get("audio")
+            if archivo is None:
+                return _error("No se recibio ni texto ni audio.", 400)
+
+            # Aprovecha el atajo multimodal de Gemini (STT + traduccion en
+            # una sola llamada) cuando esta disponible.
+            with sw.stage("stt_and_translate"):
+                resultado = speech_to_text.transcribe_and_translate(
+                    archivo.read(),
+                    archivo.mimetype or "audio/webm",
+                    idioma_hablante,
+                    idioma_destino,
+                )
+            texto_original = resultado["original"]
+            texto_traducido = resultado["translated"]
+
+        if not texto_original:
+            return _error("No se reconocio ninguna voz. Intenta de nuevo.", 422)
+
+        with sw.stage("tts"):
+            voz = text_to_speech.synthesize_speech(
+                texto_traducido, idioma_destino
+            )
+
+        sw.log("POST /api/mediate")
+
+        return jsonify({
+            "speaker_lang": idioma_hablante,
+            "target_lang": idioma_destino,
+            "original_text": texto_original,
+            "translated_text": texto_traducido,
+            "audio_base64": voz["audio_base64"],
+            "audio_mime": voz["mime_type"],
+            "timings": sw.as_dict(),
+        })
+
+    except Exception as error:
+        logger.error("/api/mediate: %s", error)
         return _error(str(error)[:200], 502)
 
 

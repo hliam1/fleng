@@ -29,11 +29,14 @@ INTENTOS_MAXIMOS = 3
 ESPERA_ENTRE_INTENTOS = 1
 
 
-def synthesize_speech(text, language="en"):
+def synthesize_speech(text, language="en", slow=False):
     """
     Convierte texto en audio.
 
     language: "es" o "en". Decide la voz.
+    slow: cuando True, lee mas despacio. Se usa en las frases del tutorial
+      para que un principiante alcance a distinguir cada palabra. Cada
+      proveedor lo aplica a su manera (parametro nativo o instruccion).
     Devuelve {"audio_base64": "...", "mime_type": "audio/wav"}
     """
     if not text or not text.strip():
@@ -51,10 +54,10 @@ def synthesize_speech(text, language="en"):
     if generador is None:
         raise RuntimeError(f"TTS_PROVIDER desconocido: {proveedor}")
 
-    return _con_reintentos(generador, text.strip(), language, proveedor)
+    return _con_reintentos(generador, text.strip(), language, proveedor, slow)
 
 
-def _con_reintentos(generador, text, language, proveedor):
+def _con_reintentos(generador, text, language, proveedor, slow=False):
     """
     Reintenta ante fallos temporales, pero no ante errores que reintentar
     no arregla (clave mala, voz inexistente, sin credito).
@@ -63,7 +66,7 @@ def _con_reintentos(generador, text, language, proveedor):
 
     for intento in range(INTENTOS_MAXIMOS):
         try:
-            return generador(text, language)
+            return generador(text, language, slow=slow)
         except RuntimeError as error:
             mensaje = str(error)
             if any(codigo in mensaje for codigo in ("401", "402", "404")):
@@ -82,13 +85,17 @@ def _con_reintentos(generador, text, language, proveedor):
 
 # -------------------------------------------------------------- Deepgram
 
-def _deepgram_tts(text, language):
+def _deepgram_tts(text, language, slow=False):
     parametros = {
         "model": config.voice_for(language),
         "encoding": "linear16",
         "sample_rate": PCM_FRECUENCIA,
         "container": "wav",
     }
+    if slow:
+        # Deepgram acepta 'speed' de 0.5 a 2.0. 0.8 se entiende bien sin
+        # sonar arrastrado.
+        parametros["speed"] = 0.8
     respuesta = clients.http().post(
         f"{clients.DEEPGRAM_BASE}/speak",
         headers={
@@ -105,15 +112,19 @@ def _deepgram_tts(text, language):
 
 # ---------------------------------------------------------------- OpenAI
 
-def _openai_tts(text, language):
+def _openai_tts(text, language, slow=False):
+    payload = {
+        "model": config.MODELS["openai"]["tts"],
+        "input": text,
+        "voice": config.voice_for(language),
+    }
+    if slow:
+        # OpenAI acepta 'speed' de 0.25 a 4.0. 0.8 mantiene naturalidad.
+        payload["speed"] = 0.8
     respuesta = clients.http().post(
         f"{clients.OPENAI_BASE}/audio/speech",
         headers=clients.bearer(config.OPENAI_API_KEY),
-        json={
-            "model": config.MODELS["openai"]["tts"],
-            "input": text,
-            "voice": config.voice_for(language),
-        },
+        json=payload,
         timeout=clients.TIMEOUT_SECONDS,
     )
     clients.raise_for_status(respuesta, "OpenAI TTS")
@@ -122,8 +133,14 @@ def _openai_tts(text, language):
 
 # ------------------------------------------------------------ ElevenLabs
 
-def _elevenlabs_tts(text, language):
+def _elevenlabs_tts(text, language, slow=False):
     voz = config.voice_for(language)
+    # ElevenLabs no tiene un parametro 'speed' directo. Su forma de ralentizar
+    # es subir stability (voz mas monotona, menos rapida) y bajar similarity.
+    if slow:
+        ajustes = {"stability": 0.85, "similarity_boost": 0.55}
+    else:
+        ajustes = {"stability": 0.5, "similarity_boost": 0.75}
     respuesta = clients.http().post(
         f"{clients.ELEVENLABS_BASE}/text-to-speech/{voz}",
         headers={
@@ -133,7 +150,7 @@ def _elevenlabs_tts(text, language):
         json={
             "text": text,
             "model_id": config.MODELS["elevenlabs"]["tts"],
-            "voice_settings": {"stability": 0.5, "similarity_boost": 0.75},
+            "voice_settings": ajustes,
         },
         timeout=clients.TIMEOUT_SECONDS,
     )
@@ -143,7 +160,7 @@ def _elevenlabs_tts(text, language):
 
 # ---------------------------------------------------------------- Gemini
 
-def _gemini_tts(text, language):
+def _gemini_tts(text, language, slow=False):
     try:
         from google import genai
         from google.genai import types
@@ -152,10 +169,21 @@ def _gemini_tts(text, language):
             "Para usar Gemini instala su libreria: pip install google-genai"
         ) from error
 
+    # Gemini TTS no tiene parametro de velocidad, pero acepta instrucciones
+    # de estilo antes del texto. Es la manera oficial de pedir un ritmo
+    # concreto sin manipular el audio despues.
+    if slow:
+        contenido = (
+            "Read the following slowly and clearly, pausing naturally between "
+            "words so a beginner language learner can follow along: " + text
+        )
+    else:
+        contenido = text
+
     cliente = genai.Client(api_key=config.GEMINI_API_KEY)
     respuesta = cliente.models.generate_content(
         model=config.MODELS["gemini"]["tts"],
-        contents=text,
+        contents=contenido,
         config=types.GenerateContentConfig(
             response_modalities=["AUDIO"],
             speech_config=types.SpeechConfig(
