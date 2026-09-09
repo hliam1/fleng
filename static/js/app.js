@@ -1686,18 +1686,47 @@ document.addEventListener('DOMContentLoaded', () => {
     () => practiceLanguage,   // se dicta en el idioma que se practica
   );
 
-  // Barra espaciadora: solo en modo Traductor y nunca al escribir en un campo.
+  // Barra espaciadora: push-to-talk en todos los modos con microfono
+  // (Traductor, Conversacion, Dictado, Mediador). Nunca actua cuando el
+  // usuario esta escribiendo en un campo de texto.
+  //
+  // En Mediador hay dos botones (uno por idioma); Space usa el ultimo que
+  // se pulso a mano, y si no se ha pulsado ninguno todavia, arranca con
+  // el del idioma que la persona esta practicando. Asi cualquier usuario
+  // puede usar Space sin cambiar ajustes.
+  let ultimoMicMediador = null;   // 'es' | 'en' | null
+
+  function botonMicroDeModoActivo() {
+    switch (currentMode) {
+      case 'translator':    return translatorMicBtn;
+      case 'conversation':  return conversationMicBtn;
+      case 'dictation':     return dictationMicBtn;
+      case 'mediator': {
+        // getElementById asegura que se resuelven en tiempo de uso, no
+        // en la carga del handler (los botones se declaran mas abajo).
+        const carril = ultimoMicMediador
+          || (practiceLanguage === 'en' ? 'en' : 'es');
+        return document.getElementById('mediator-mic-' + carril);
+      }
+      default: return null;
+    }
+  }
+
   document.addEventListener('keydown', (evt) => {
-    if (evt.code !== 'Space' || currentMode !== 'translator') return;
+    if (evt.code !== 'Space') return;
     if (isEditableElement(document.activeElement) || evt.repeat || isProcessing) return;
+    const boton = botonMicroDeModoActivo();
+    if (!boton) return;
     evt.preventDefault();
-    translatorMicBtn.dispatchEvent(new Event('mousedown'));
+    boton.dispatchEvent(new Event('mousedown'));
   });
   document.addEventListener('keyup', (evt) => {
-    if (evt.code !== 'Space' || currentMode !== 'translator') return;
+    if (evt.code !== 'Space') return;
     if (isEditableElement(document.activeElement)) return;
+    const boton = botonMicroDeModoActivo();
+    if (!boton) return;
     evt.preventDefault();
-    translatorMicBtn.dispatchEvent(new Event('mouseup'));
+    boton.dispatchEvent(new Event('mouseup'));
   });
 
   /* ============================================================
@@ -2437,6 +2466,11 @@ const newBtn = document.createElement('button');
   // distinto por carril, asi cada persona pulsa su propio boton.
   // attachHoldToRecord llama a onResult con {text} (STT del navegador) o
   // {blob} (audio grabado para transcribir en el servidor).
+  //
+  // El mousedown en cada carril tambien recuerda cual fue el ultimo, para
+  // que la barra espaciadora sepa a que carril dirigirse en Mediador.
+  mediatorMicEsBtn.addEventListener('mousedown', () => { ultimoMicMediador = 'es'; });
+  mediatorMicEnBtn.addEventListener('mousedown', () => { ultimoMicMediador = 'en'; });
   attachHoldToRecord(
     mediatorMicEsBtn,
     ({ text, blob }) => enviarTurnoMediador({ speakerLang: 'es', text, audioBlob: blob }),
