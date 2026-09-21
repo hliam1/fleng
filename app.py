@@ -21,7 +21,7 @@ from threading import Timer
 
 from flask import Flask, jsonify, render_template, request, send_file
 
-from services import (clients, config, conversation, imagenes, pdf_evaluation,
+from services import (clients, config, conversation, custom_responses, imagenes, pdf_evaluation,
                       speech_to_text,
                       text_to_speech, translator, tutorial)
 
@@ -245,10 +245,18 @@ def api_conversation():
 
         historial.append({"role": "user", "content": texto_usuario})
 
-        with sw.stage("llm_response"):
-            texto_ia = conversation.get_ai_response(
-                historial, idioma_practica, tema
-            )
+        # Intentar respuesta personalizada primero (sin costo de API, más rápido)
+        respuesta_predefinida = custom_responses.obtener_respuesta_personalizada(
+            texto_usuario, idioma_practica
+        )
+        if respuesta_predefinida:
+            texto_ia = respuesta_predefinida
+        else:
+            # Si no es una pregunta predefinida, usar Groq normalmente
+            with sw.stage("llm_response"):
+                texto_ia = conversation.get_ai_response(
+                    historial, idioma_practica, tema
+                )
 
         historial.append({"role": "assistant", "content": texto_ia})
 
