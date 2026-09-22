@@ -29,8 +29,20 @@ RESPUESTAS_PREDEFINIDAS = {
             r"what\s+are\s+you",
             r"what's\s+your\s+name",
         ],
-        "respuesta_es": "¡Soy Fleng! Tu maestro, tutor y asesor de idiomas. ¿Con qué te podría ayudar?",
-        "respuesta_en": "I'm Fleng! Your teacher, tutor, and language advisor. How can I help you?",
+        "respuesta_es": (
+            "¡Soy Fleng! Tu maestro, tutor y asesor de idiomas personalizado. Fui creado por un equipo apasionado "
+            "de ingenieros y lingüistas que trabajan para mejorar la práctica del español. Puedo ayudarte de muchas formas: "
+            "practicando conversaciones en tiempo real, traduciéndote textos, haciendo dictados interactivos, "
+            "evaluando tu nivel y dándote retroalimentación personalizada. Tengo un avatar animado que se mueve sincronizado "
+            "con el audio para hacer el aprendizaje más divertido y cercano. ¿Con qué te podría ayudar hoy?"
+        ),
+        "respuesta_en": (
+            "I'm Fleng! Your personalized language teacher, tutor, and advisor. I was created by a passionate team "
+            "of engineers and linguists working to improve Spanish practice. I can help you in many ways: practicing "
+            "real-time conversations, translating texts, interactive dictation, evaluating your level, and giving you "
+            "personalized feedback. I have an animated avatar that moves in sync with the audio to make learning more "
+            "fun and engaging. How can I help you today?"
+        ),
     },
     # Evento importante hoy
     "evento": {
@@ -53,8 +65,8 @@ RESPUESTAS_PREDEFINIDAS = {
             r"who.*created\s+fleng",
             r"fleng\s+team",
         ],
-        "respuesta_es": "Ian Castellon, Kenji Martinez, Stephen Lopez, Héctor Pineda, Daniel Villeda, Milton López",
-        "respuesta_en": "Ian Castellon, Kenji Martinez, Stephen Lopez, Héctor Pineda, Daniel Villeda, Milton López",
+        "respuesta_es": "Ian Castellón, Kenji Martinez, Stephen Lopez, Héctor Pineda, Daniel Villeda, Milton López",
+        "respuesta_en": "Ian Castellón, Kenji Martinez, Stephen Lopez, Héctor Pineda, Daniel Villeda, Milton López",
     },
     # Diseño de Fleng
     "diseño": {
@@ -144,8 +156,20 @@ RESPUESTAS_PREDEFINIDAS = {
             r"who\s+founded.*itee",
             r"who\s+created.*itee",
         ],
-        "respuesta_es": "El Instituto Tecnológico de Excelencia Educativa (ITEE) fue fundado en 1986 por el ingeniero Raúl Peña Moreno en San Pedro Sula, Honduras.",
-        "respuesta_en": "The Instituto Tecnológico de Excelencia Educativa (ITEE) was founded in 1986 by engineer Raúl Peña Moreno in San Pedro Sula, Honduras.",
+        "respuesta_es": (
+            "El Instituto Tecnológico de Excelencia Educativa (ITEE) fue fundado en 1986 por el ingeniero Raúl Peña Moreno "
+            "en San Pedro Sula, Honduras. El ITEE nació con la misión de ser la primera institución educativa privada en "
+            "Honduras en brindar carreras técnicas de calidad. Desde entonces, ha sido un centro de formación de profesionales "
+            "idóneos que trabajan en tecnología, ingeniería y diseño. El ITEE actualmente celebra más de 40 años de excelencia "
+            "educativa y es reconocido como la mejor institución tecnológica del país."
+        ),
+        "respuesta_en": (
+            "The Instituto Tecnológico de Excelencia Educativa (ITEE) was founded in 1986 by engineer Raúl Peña Moreno in "
+            "San Pedro Sula, Honduras. The ITEE was born with the mission to be the first private educational institution in "
+            "Honduras to offer quality technical careers. Since then, it has been a center for training ideal professionals who "
+            "work in technology, engineering, and design. The ITEE currently celebrates over 40 years of educational excellence "
+            "and is recognized as the best technological institution in the country."
+        ),
     },
     # Carreras de los creadores de Fleng
     "carreras_creadores": {
@@ -195,6 +219,28 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "Encuentras las carreras de Mecatrónica, Electromecánica, Diseño Gráfico y Programación.",
         "respuesta_en": "You can find the careers in Mechatronics, Electromechanics, Graphic Design, and Programming.",
+    },
+    # Beta tester original
+    "beta_tester": {
+        "patrones": [
+            r"quien\s+es\s+el\s+beta\s+tester",
+            r"beta\s+tester\s+original",
+            r"primer\s+beta\s+tester",
+            r"who\s+is\s+the\s+beta\s+tester",
+            r"original\s+beta\s+tester",
+            r"elkin\s+sierra",
+        ],
+        "respuesta_es": (
+            "El beta tester original fue Elkin Sierra. Su retroalimentación fue invaluable durante las primeras fases "
+            "de desarrollo de Fleng. Elkin nos ayudó a identificar bugs, sugerir mejoras en la interfaz, y a afinar "
+            "la experiencia de aprendizaje. Su contribución como primer usuario fue fundamental para que Fleng llegara "
+            "a ser la aplicación que es hoy. ¡Gracias, Elkin!"
+        ),
+        "respuesta_en": (
+            "The original beta tester was Elkin Sierra. His feedback was invaluable during the early stages of Fleng's "
+            "development. Elkin helped us identify bugs, suggest interface improvements, and refine the learning experience. "
+            "His contribution as our first user was essential for Fleng to become the application it is today. Thank you, Elkin!"
+        ),
     },
 }
 
