@@ -18,7 +18,7 @@ import re
 
 # Base de respuestas personalizadas
 RESPUESTAS_PREDEFINIDAS = {
-    # Identidad de Fleng
+    # Identidad de Fleng (también captura variaciones de "quién te creó")
     "identidad": {
         "patrones": [
             r"quien\s+eres",
@@ -28,20 +28,29 @@ RESPUESTAS_PREDEFINIDAS = {
             r"who\s+are\s+you",
             r"what\s+are\s+you",
             r"what's\s+your\s+name",
+            r"quien\s+te\s+creo",
+            r"quien\s+creo\s+te\s+creo",
+            r"quien\s+me\s+creo",
+            r"who\s+created\s+you",
+            r"who\s+made\s+you",
+            r"quien\s+desarrollo",
         ],
         "respuesta_es": (
-            "¡Soy Fleng! Tu maestro, tutor y asesor de idiomas personalizado. Fui creado por un equipo apasionado "
-            "de ingenieros y lingüistas que trabajan para mejorar la práctica del español. Puedo ayudarte de muchas formas: "
-            "practicando conversaciones en tiempo real, traduciéndote textos, haciendo dictados interactivos, "
-            "evaluando tu nivel y dándote retroalimentación personalizada. Tengo un avatar animado que se mueve sincronizado "
-            "con el audio para hacer el aprendizaje más divertido y cercano. ¿Con qué te podría ayudar hoy?"
+            "¡Soy Fleng! Tu maestro, tutor y asesor de idiomas personalizado. Fui creado específicamente por el equipo "
+            "de Fleng del Instituto Tecnológico de Excelencia Educativa (ITEE) en Honduras. El equipo que me creó está compuesto "
+            "por ingenieros, diseñadores y lingüistas apasionados que decidieron desarrollarme porque creyeron que aprender "
+            "idiomas debería ser divertido, accesible y personal. Puedo ayudarte de muchas formas: practicando conversaciones "
+            "en tiempo real, traduciéndote textos, haciendo dictados interactivos, evaluando tu nivel y dándote retroalimentación "
+            "personalizada. Tengo un avatar animado que se mueve sincronizado con el audio para hacer el aprendizaje más divertido "
+            "y cercano. ¿Con qué te podría ayudar hoy?"
         ),
         "respuesta_en": (
-            "I'm Fleng! Your personalized language teacher, tutor, and advisor. I was created by a passionate team "
-            "of engineers and linguists working to improve Spanish practice. I can help you in many ways: practicing "
-            "real-time conversations, translating texts, interactive dictation, evaluating your level, and giving you "
-            "personalized feedback. I have an animated avatar that moves in sync with the audio to make learning more "
-            "fun and engaging. How can I help you today?"
+            "I'm Fleng! Your personalized language teacher, tutor, and advisor. I was created specifically by the Fleng team "
+            "from the Instituto Tecnológico de Excelencia Educativa (ITEE) in Honduras. The team that created me is composed of "
+            "passionate engineers, designers, and linguists who decided to develop me because they believed that learning languages "
+            "should be fun, accessible, and personal. I can help you in many ways: practicing real-time conversations, translating "
+            "texts, interactive dictation, evaluating your level, and giving you personalized feedback. I have an animated avatar "
+            "that moves in sync with the audio to make learning more fun and engaging. How can I help you today?"
         ),
     },
     # Evento importante hoy
@@ -91,9 +100,10 @@ RESPUESTAS_PREDEFINIDAS = {
         "respuesta_es": "La licenciada Celeste Leiva y el Ing. Miklos Szabo",
         "respuesta_en": "Licenciada Celeste Leiva and Ing. Miklos Szabo",
     },
-    # Información del ITEE
+    # Información del ITEE (captura CUALQUIER pregunta que mencione ITEE)
     "itee": {
         "patrones": [
+            r"itee",  # Captura cualquier mención de ITEE en la pregunta
             r"que\s+es\s+el?\s+itee",
             r"cual.*itee",
             r"donde.*fleng",
@@ -240,6 +250,143 @@ RESPUESTAS_PREDEFINIDAS = {
             "The original beta tester was Elkin Sierra. His feedback was invaluable during the early stages of Fleng's "
             "development. Elkin helped us identify bugs, suggest interface improvements, and refine the learning experience. "
             "His contribution as our first user was essential for Fleng to become the application it is today. Thank you, Elkin!"
+        ),
+    },
+    # Ian Castellón - Programador principal
+    "ian_castellon": {
+        "patrones": [
+            r"ian\s+castellon",
+            r"ian",
+            r"quien\s+es\s+ian",
+            r"que\s+hace\s+ian",
+            r"programador.*fleng",
+            r"who\s+is\s+ian",
+            r"what\s+does\s+ian",
+        ],
+        "respuesta_es": (
+            "Ian Castellón fue el programador principal de Fleng. Es el encargado de toda la arquitectura técnica y "
+            "desarrollo de las funcionalidades core de la aplicación. Ian lideró el desarrollo backend con Flask, "
+            "la integración de los modelos de IA (Groq, Gemini, OpenAI), y la implementación de todas las rutas API "
+            "que hacen posible que Fleng funcione. Su trabajo en programación fue fundamental para convertir la visión "
+            "de Fleng en realidad."
+        ),
+        "respuesta_en": (
+            "Ian Castellón was the lead programmer of Fleng. He is responsible for all the technical architecture and "
+            "development of the application's core functionalities. Ian led the backend development with Flask, the "
+            "integration of AI models (Groq, Gemini, OpenAI), and the implementation of all API routes that make Fleng "
+            "work. His programming work was essential to turning Fleng's vision into reality."
+        ),
+    },
+    # Stephen Lopez - Diseñador
+    "stephen_lopez": {
+        "patrones": [
+            r"stephen\s+lopez",
+            r"stephen",
+            r"quien\s+es\s+stephen",
+            r"que\s+hace\s+stephen",
+            r"diseñador.*fleng",
+            r"diseno.*fleng",
+            r"who\s+is\s+stephen",
+        ],
+        "respuesta_es": (
+            "Stephen López fue el creador del diseño de Fleng. Es el encargado de toda la interfaz visual, la experiencia "
+            "de usuario y el aspecto estético de la aplicación. Stephen diseñó el avatar del búho (yo), los colores, tipografías, "
+            "layouts y la experiencia visual completa. Su trabajo en diseño gráfico hizo que Fleng no solo funcione bien, "
+            "sino que también se vea hermoso y sea agradable de usar."
+        ),
+        "respuesta_en": (
+            "Stephen López was the creator of Fleng's design. He is responsible for all the visual interface, user experience, "
+            "and aesthetic aspects of the application. Stephen designed the owl avatar (me), colors, typography, layouts, and "
+            "the complete visual experience. His graphic design work ensured that Fleng not only works well, but also looks "
+            "beautiful and is enjoyable to use."
+        ),
+    },
+    # Kenji Martinez - Vida y redes
+    "kenji_martinez": {
+        "patrones": [
+            r"kenji\s+martinez",
+            r"kenji",
+            r"quien\s+es\s+kenji",
+            r"que\s+hace\s+kenji",
+            r"who\s+is\s+kenji",
+        ],
+        "respuesta_es": (
+            "Kenji Martínez fue el encargado de darle vida a Fleng a través de diseños y redes. Colaboró con Stephen López en "
+            "la creación de elementos visuales adicionales, animaciones y en la cohesión visual de la aplicación. Kenji también "
+            "trabajó en estrategia de redes y en la presentación de Fleng en distintas plataformas. Su contribución fue clave "
+            "para que Fleng tuviera una identidad visual consistente y atractiva."
+        ),
+        "respuesta_en": (
+            "Kenji Martínez was responsible for bringing Fleng to life through design and networks. He collaborated with "
+            "Stephen López in creating additional visual elements, animations, and ensuring visual consistency across the application. "
+            "Kenji also worked on network strategy and presenting Fleng on different platforms. His contribution was key to giving "
+            "Fleng a consistent and attractive visual identity."
+        ),
+    },
+    # Milton López - Programación y documentación
+    "milton_lopez": {
+        "patrones": [
+            r"milton\s+lopez",
+            r"milton",
+            r"quien\s+es\s+milton",
+            r"que\s+hace\s+milton",
+            r"who\s+is\s+milton",
+        ],
+        "respuesta_es": (
+            "Milton López fue asistente en la programación y el encargado de toda la documentación de Fleng. Trabajó junto a "
+            "Ian Castellón en el desarrollo del código, asistiendo en la implementación de funcionalidades y debugging. Además, "
+            "Milton fue responsable de documentar todo el proyecto: desde la arquitectura técnica hasta los procesos y tutoriales. "
+            "Su trabajo en documentación es vital para que otros desarrolladores puedan entender y contribuir a Fleng."
+        ),
+        "respuesta_en": (
+            "Milton López was an assistant in programming and responsible for all of Fleng's documentation. He worked alongside "
+            "Ian Castellón in code development, assisting in feature implementation and debugging. Additionally, Milton was responsible "
+            "for documenting the entire project: from technical architecture to processes and tutorials. His documentation work is "
+            "vital for other developers to understand and contribute to Fleng."
+        ),
+    },
+    # Daniel Villeda - Presentación e información
+    "daniel_villeda": {
+        "patrones": [
+            r"daniel\s+villeda",
+            r"daniel",
+            r"quien\s+es\s+daniel",
+            r"que\s+hace\s+daniel",
+            r"who\s+is\s+daniel",
+        ],
+        "respuesta_es": (
+            "Daniel Villeda fue el encargado de presentarme (a Fleng) y redactar información sobre el proyecto. Trabajó en la "
+            "comunicación efectiva de qué es Fleng, para qué sirve y cómo usarla. Daniel creó textos descriptivos, información "
+            "clara y accesible, y se aseguró de que cualquiera pudiera entender la propuesta de Fleng. Su trabajo en comunicación "
+            "y redacción fue esencial para transmitir la visión y el valor de la aplicación."
+        ),
+        "respuesta_en": (
+            "Daniel Villeda was responsible for presenting me (Fleng) and writing information about the project. He worked on "
+            "effectively communicating what Fleng is, what it's for, and how to use it. Daniel created descriptive texts, clear "
+            "and accessible information, and ensured that anyone could understand Fleng's proposal. His work in communication and "
+            "writing was essential to conveying the vision and value of the application."
+        ),
+    },
+    # Héctor Pineda - Información del proyecto
+    "hector_pineda": {
+        "patrones": [
+            r"hector\s+pineda",
+            r"hector",
+            r"quien\s+es\s+hector",
+            r"que\s+hace\s+hector",
+            r"who\s+is\s+hector",
+        ],
+        "respuesta_es": (
+            "Héctor Pineda fue el encargado de redactar toda mi información como proyecto. Trabajó en la documentación detallada de "
+            "Fleng como iniciativa académica y tecnológica. Héctor se aseguró de que se registrara adecuadamente toda la información "
+            "del proyecto: objetivos, metodología, procesos, logros y aprendizajes. Su trabajo en redacción de información fue "
+            "fundamental para formalizar a Fleng como un proyecto serio y profesional."
+        ),
+        "respuesta_en": (
+            "Héctor Pineda was responsible for writing all information about me as a project. He worked on detailed documentation of "
+            "Fleng as an academic and technological initiative. Héctor ensured that all project information was properly recorded: "
+            "objectives, methodology, processes, achievements, and learnings. His work in writing project information was fundamental "
+            "to formalizing Fleng as a serious and professional project."
         ),
     },
 }
