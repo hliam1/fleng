@@ -18,16 +18,19 @@ import re
 
 # Base de respuestas personalizadas
 RESPUESTAS_PREDEFINIDAS = {
-    # Identidad de Fleng (también captura variaciones de "quién te creó")
+    # Identidad de Fleng (también captura variaciones de "quién te creó" y "qué es Fleng")
     "identidad": {
         "patrones": [
             r"quien\s+eres",
             r"que\s+eres",
             r"como\s+te\s+llamas",
             r"cual\s+es\s+tu\s+nombre",
+            r"que\s+es\s+fleng",
+            r"cual\s+es\s+fleng",
             r"who\s+are\s+you",
             r"what\s+are\s+you",
             r"what's\s+your\s+name",
+            r"what\s+is\s+fleng",
             r"quien\s+te\s+creo",
             r"quien\s+creo\s+te\s+creo",
             r"quien\s+me\s+creo",
@@ -387,6 +390,32 @@ RESPUESTAS_PREDEFINIDAS = {
             "Fleng as an academic and technological initiative. Héctor ensured that all project information was properly recorded: "
             "objectives, methodology, processes, achievements, and learnings. His work in writing project information was fundamental "
             "to formalizing Fleng as a serious and professional project."
+        ),
+    },
+    # Creadores de Fleng (se activa cuando menciona "creo" + "fleng")
+    "creadores_fleng": {
+        "patrones": [
+            r"creo.*fleng",
+            r"fleng.*creo",
+            r"quien\s+creo\s+fleng",
+            r"quienes\s+crearon\s+fleng",
+            r"who\s+created\s+fleng",
+            r"who\s+made\s+fleng",
+        ],
+        "respuesta_es": (
+            "Fleng fue creado por un equipo de seis miembros del Instituto Tecnológico de Excelencia Educativa (ITEE): "
+            "Ian Castellón (programador principal), Stephen López (diseñador), Kenji Martínez (diseños y redes), "
+            "Milton López (programación asistente y documentación), Daniel Villeda (presentación e información), "
+            "y Héctor Pineda (información del proyecto). Juntos, este equipo apasionado de ingenieros, diseñadores "
+            "y lingüistas desarrollaron Fleng porque creyeron que aprender idiomas debería ser divertido, accesible "
+            "y personal."
+        ),
+        "respuesta_en": (
+            "Fleng was created by a team of six members from the Instituto Tecnológico de Excelencia Educativa (ITEE): "
+            "Ian Castellón (lead programmer), Stephen López (designer), Kenji Martínez (design and networks), "
+            "Milton López (assistant programming and documentation), Daniel Villeda (presentation and information), "
+            "and Héctor Pineda (project information). Together, this passionate team of engineers, designers, and "
+            "linguists developed Fleng because they believed that learning languages should be fun, accessible, and personal."
         ),
     },
 }
