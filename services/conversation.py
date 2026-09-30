@@ -5,9 +5,6 @@ from services import config, llm
 
 NOMBRES_IDIOMA = {"es": "espanol", "en": "ingles"}
 
-# Temas de conversacion. Cada uno anade una situacion al system prompt para
-# orientar el vocabulario, en vez de dejar la charla sin rumbo.
-# "libre" no anade nada: es el comportamiento de siempre.
 TEMAS = {
     "libre": "",
     "restaurante": (
@@ -32,12 +29,14 @@ TEMAS = {
     ),
 }
 
-# Cuantos turnos recientes se mandan al modelo.
-#
-# Cuanto mas largo el contexto, mas tarda el modelo en soltar el primer
-# token. Diez turnos bastan para que la conversacion tenga sentido y
-# mantienen la peticion pequena.
+# Cuantos turnos recientes se mandan al modelo para conversar.
 MAX_TURNOS_CONTEXTO = 10
+
+# --- FIX: Recortar mensajes individuales excesivamente largos ---
+# Si un turno tiene una transcripcion enorme (error de STT, o el usuario
+# hablo mucho), se recorta. Es proteccion contra prompts gigantes por
+# UN mensaje, NO se pierde historial.
+MAX_CARACTERES_POR_TURNO = 800
 
 ESQUEMA_EVALUACION = (
     "Responde UNICAMENTE con JSON valido, sin markdown y sin texto alrededor:\n"
@@ -48,7 +47,7 @@ ESQUEMA_EVALUACION = (
     '  "problem_words": ["palabra", "..."],\n'
     '  "common_errors": ["error", "..."],\n'
     '  "corrected_phrases": ["lo que dijo -> como se dice mejor", "..."],\n'
-    '  "recommendations": ["consejo", "..."]\n'
+    '  "recommendations": ["recomendacion", "..."]\n'
     "}"
 )
 
@@ -62,10 +61,6 @@ def get_ai_response(history, practice_language, topic="libre"):
         f"Eres un companero amigable para practicar {idioma}. "
         f"Responde SIEMPRE en {idioma}, pase lo que pase. "
         "Usa un tono natural y cercano. "
-        # La brevedad no es un capricho de estilo: el texto que genera el
-        # modelo hay que convertirlo despues en voz, y la sintesis tarda en
-        # proporcion a los caracteres. Una respuesta corta llega antes por
-        # partida doble.
         "Respuestas MUY breves: 2 o 3 frases como maximo, nunca mas. "
         "Haz preguntas de vez en cuando para mantener la conversacion viva. "
         "Si el usuario comete un error grave, corrigelo con suavidad y sigue."
@@ -81,13 +76,40 @@ def get_ai_response(history, practice_language, topic="libre"):
 
 
 def evaluate_conversation(history, practice_language):
-    """Evalua la conversacion. Devuelve un dict con el esquema completo."""
+    """
+    Evalua TODA la conversacion. Devuelve un dict con el esquema completo.
+
+    FIX: Mantiene TODO el historial. Solo aplica mejoras defensivas:
+    - Recorta mensajes individuales excesivamente largos (proteccion contra
+      transcripciones erroneas de STT que a veces dan miles de caracteres).
+    - Aumenta max_tokens de respuesta para JSON completo.
+    - Rescata JSON malformado si el modelo trunca la respuesta.
+    - Fallback util si TODO falla, en vez de error 502.
+    """
     idioma = NOMBRES_IDIOMA.get(practice_language, practice_language)
 
+    # --- FIX: Recortar mensajes individuales muy largos ---
+    # SOLO turnos individuales gigantes (proteccion contra bugs de STT),
+    # NO se elimina ningun turno del historial.
+    def _recortar(texto):
+        if len(texto) > MAX_CARACTERES_POR_TURNO:
+            return texto[:MAX_CARACTERES_POR_TURNO] + "... [mensaje recortado]"
+        return texto
+
+    # Transcripcion COMPLETA (todos los turnos)
     transcripcion = "\n".join(
-        f"{'Usuario' if m.get('role') == 'user' else 'IA'}: {m.get('content', '')}"
+        f"{'Usuario' if m.get('role') == 'user' else 'IA'}: {_recortar(m.get('content', ''))}"
         for m in history
     )
+
+    # Nota informativa sobre longitud
+    nota_longitud = ""
+    if len(history) > 20:
+        nota_longitud = (
+            f"\n\n(Conversacion completa de {len(history)} turnos. "
+            f"Evalua el desempeno GLOBAL del estudiante a traves de "
+            f"toda la charla.)"
+        )
 
     instruccion = (
         f"Evalua el desempeno de un estudiante practicando {idioma}. "
@@ -97,19 +119,99 @@ def evaluate_conversation(history, practice_language):
         "Escribe los comentarios en español. " + ESQUEMA_EVALUACION
     )
 
+    # --- FIX: Escalar tokens segun longitud de conversacion ---
+    # Conversaciones largas → evaluacion mas detallada → mas tokens necesarios
+    # para el JSON de respuesta (mas problem_words, mas correcciones, etc.)
+    # Base: 1500 tokens. Añade 50 tokens por cada 10 turnos extra.
+    turnos_extra = max(0, len(history) - 10)
+    tokens_extra = (turnos_extra // 10) * 50
+    max_tokens_evaluacion = max(config.MAX_TOKENS["evaluate"], 1500 + tokens_extra)
+    # Cap en 3000 para no dispararse
+    max_tokens_evaluacion = min(max_tokens_evaluacion, 3000)
+
     crudo = llm.chat(
         instruccion,
-        [{"role": "user", "content": transcripcion}],
+        [{"role": "user", "content": transcripcion + nota_longitud}],
         tier="smart",
         json_mode=True,
-        max_tokens=config.MAX_TOKENS["evaluate"],
-        # Temperatura baja: la evaluacion debe ser CONSISTENTE. Con la
-        # temperatura de conversar (0.7) el modelo improvisa y la misma
-        # conversacion daba notas distintas cada vez. Con 0.2 la nota es
-        # estable entre evaluaciones repetidas.
+        max_tokens=max_tokens_evaluacion,
         temperature=0.2,
     )
-    return _normalizar(llm.parse_json_response(crudo))
+
+    # --- FIX: Manejo robusto de JSON malformado ---
+    try:
+        datos_parseados = llm.parse_json_response(crudo)
+    except Exception as error:
+        import logging
+        logging.error("Error parseando evaluacion JSON: %s", error)
+        logging.error("Respuesta cruda (primeros 300 chars): %s", (crudo or "")[:300])
+
+        # Intento de rescate: reparar JSON truncado
+        rescatado = _intentar_rescatar_json(crudo)
+        if rescatado:
+            logging.info("JSON rescatado exitosamente")
+            datos_parseados = rescatado
+        else:
+            # Ultimo recurso: fallback util (no rompe el frontend)
+            datos_parseados = {
+                "score": 0,
+                "pronunciation": "No se pudo procesar la evaluacion completa.",
+                "fluency": "El servicio de evaluacion tuvo un problema temporal.",
+                "problem_words": [],
+                "common_errors": [],
+                "corrected_phrases": [],
+                "recommendations": [
+                    "Intenta finalizar de nuevo en unos segundos.",
+                ],
+            }
+
+    return _normalizar(datos_parseados)
+
+
+def _intentar_rescatar_json(crudo):
+    """
+    Si el JSON viene truncado, intenta rescatar lo que se pueda.
+    Cierra llaves/corchetes que quedaron abiertos.
+    """
+    import json
+
+    if not crudo or not isinstance(crudo, str):
+        return None
+
+    limpio = crudo.strip()
+
+    # Limpiar markdown wrapper si el modelo lo puso
+    if limpio.startswith("```"):
+        lineas = limpio.split("\n")
+        lineas = [l for l in lineas if not l.strip().startswith("```")]
+        limpio = "\n".join(lineas).strip()
+        if limpio.lower().startswith("json"):
+            limpio = limpio[4:].strip()
+
+    # Intentar parseo directo primero
+    try:
+        return json.loads(limpio)
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    # Reparacion: buscar ultimo caracter valido y cerrar estructuras
+    for i in range(len(limpio) - 1, -1, -1):
+        if limpio[i] in (',', '"', ']', '}'):
+            candidato = limpio[:i+1]
+            abiertas = candidato.count('{') - candidato.count('}')
+            corchetes = candidato.count('[') - candidato.count(']')
+
+            if candidato.endswith(','):
+                candidato = candidato[:-1]
+
+            candidato += ']' * corchetes + '}' * abiertas
+
+            try:
+                return json.loads(candidato)
+            except (json.JSONDecodeError, ValueError):
+                continue
+
+    return None
 
 
 def _normalizar(datos):
@@ -146,22 +248,8 @@ def _normalizar(datos):
 
 
 def correct_dictation(text, practice_language):
-    """
-    Corrige una frase dictada por el usuario en el idioma que practica.
-
-    A diferencia de la conversacion, aqui no se responde ni se sigue el
-    hilo: solo se devuelve la version correcta de lo que dijo, con una
-    explicacion breve de que se cambio y por que. Es practica de
-    pronunciacion y gramatica, no charla.
-
-    Devuelve un dict:
-      correccion : la frase corregida (lo que leera el avatar en voz alta)
-      explicacion: que se cambio, en el idioma que el usuario ya conoce
-      sin_errores: True si la frase ya estaba bien
-    """
+    """Corrige una frase dictada por el usuario en el idioma que practica."""
     idioma = NOMBRES_IDIOMA.get(practice_language, practice_language)
-    # La explicacion se da en el idioma que el usuario YA sabe, para que la
-    # entienda; la correccion va en el idioma que practica.
     idioma_base = "ingles" if practice_language == "es" else "espanol"
 
     instruccion = (
@@ -183,7 +271,6 @@ def correct_dictation(text, practice_language):
         tier="smart",
         json_mode=True,
         max_tokens=config.MAX_TOKENS["evaluate"],
-        # Consistencia: corregir la misma frase debe dar el mismo resultado.
         temperature=0.2,
     )
 
@@ -207,7 +294,6 @@ def _normalizar_dictado(crudo, original):
     explicacion = str(datos.get("explicacion") or "").strip()
     sin_errores = bool(datos.get("sin_errores", False))
 
-    # Si el modelo no devolvio correccion util, se queda la original.
     if not correccion:
         correccion = original.strip()
 
