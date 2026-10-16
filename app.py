@@ -581,6 +581,15 @@ def _mostrar_arranque(puerto):
     print("=" * 58 + "\n")
 
 
+
+@app.route("/api/diag/elevenlabs")
+def api_diag_elevenlabs():
+    # DIAGNOSTICO TEMPORAL: muestra el error exacto de ElevenLabs desde
+    # el servidor. Borra esta ruta y services/diagnostico.py al terminar.
+    from services import diagnostico
+    return jsonify(diagnostico.probar_elevenlabs())
+
+
 if __name__ == "__main__":
     PUERTO = int(os.getenv("PORT", "5000"))
     # En Railway y otras plataformas en la nube, el host debe ser 0.0.0.0
