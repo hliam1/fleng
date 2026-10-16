@@ -12,7 +12,7 @@ from services import clients, config
 
 
 def probar_elevenlabs():
-    voz = config.voice_for("pt")
+    voz = config.voice_for("pt", "elevenlabs")
     modelo = config.MODELS["elevenlabs"]["tts"]
     clave = config.ELEVENLABS_API_KEY or ""
 

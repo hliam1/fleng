@@ -124,7 +124,7 @@ VALID_PROVIDERS = {
 }
 
 
-def voice_for(language):
+def voice_for(language, proveedor=None):
     """Devuelve la voz del proveedor TTS activo para el idioma dado."""
     if language == "es":
         key = "voice_es"
@@ -133,7 +133,7 @@ def voice_for(language):
     else:
         key = "voice_en"
 
-    modelos = MODELS[TTS_PROVIDER]
+    modelos = MODELS[proveedor or TTS_PROVIDER]
     # Si el proveedor no tiene voz para ese idioma (p.ej. Deepgram no tiene
     # portugues), se cae a la voz espanola, y si tampoco, a la inglesa.
     return modelos.get(key) or modelos.get("voice_es") or modelos.get("voice_en")

@@ -144,7 +144,7 @@ def _openai_tts(text, language, slow=False):
 # ------------------------------------------------------------ ElevenLabs
 
 def _elevenlabs_tts(text, language, slow=False):
-    voz = config.voice_for(language)
+    voz = config.voice_for(language, "elevenlabs")
     # ElevenLabs no tiene un parametro 'speed' directo. Su forma de ralentizar
     # es subir stability (voz mas monotona, menos rapida) y bajar similarity.
     if slow:
