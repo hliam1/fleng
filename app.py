@@ -32,8 +32,15 @@ logger = logging.getLogger("fleng")
 
 CARPETA_BASE = os.path.dirname(os.path.abspath(__file__))
 
-IDIOMAS_VALIDOS = ("es", "en")
-DIRECCIONES_VALIDAS = ("es-en", "en-es")
+IDIOMAS_VALIDOS = ("es", "en", "pt")
+# Direcciones de traduccion validas. El portugues se practica contra el
+# espanol (la interfaz), asi que se admiten es<->pt ademas de es<->en.
+# Tambien en<->pt por si acaso, aunque el flujo normal pasa por espanol.
+DIRECCIONES_VALIDAS = (
+    "es-en", "en-es",
+    "es-pt", "pt-es",
+    "en-pt", "pt-en",
+)
 
 # Limite de audio subido: 25 MB. Sin esto, una peticion enorme tumba el server.
 app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024
@@ -260,7 +267,10 @@ def api_conversation():
 
         historial.append({"role": "assistant", "content": texto_ia})
 
-        idioma_referencia = "es" if idioma_practica == "en" else "en"
+        # El idioma de referencia (en el que se muestra la traduccion de
+        # apoyo) es el que el usuario ya sabe. Al practicar ingles o
+        # portugues, la referencia es espanol; al practicar espanol, ingles.
+        idioma_referencia = "en" if idioma_practica == "es" else "es"
 
         # Traducir y generar la voz solo dependen de texto_ia, no la una de
         # la otra. Encadenarlas hacia esperar al usuario la suma de las dos
@@ -459,7 +469,10 @@ def api_mediate():
     # target explicito si es distinto al del hablante.
     idioma_destino = request.form.get("target_lang")
     if idioma_destino not in IDIOMAS_VALIDOS or idioma_destino == idioma_hablante:
-        idioma_destino = "en" if idioma_hablante == "es" else "es"
+        # Respaldo si no viene un destino valido: el frontend normalmente
+        # manda el target explicito (el otro carril). Aqui se asume que el
+        # par es español<->el otro idioma.
+        idioma_destino = "es" if idioma_hablante != "es" else "en"
 
     sw = clients.Stopwatch()
 

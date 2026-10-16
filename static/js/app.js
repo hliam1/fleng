@@ -122,7 +122,13 @@ document.addEventListener('DOMContentLoaded', () => {
     brandLogoEl.classList.toggle('hidden', !imagenesDisponibles.logo);
   }
 
-  const LANG_NAMES = { es: 'Español', en: 'Inglés' };
+  const LANG_NAMES = { es: 'Español', en: 'Inglés', pt: 'Portugués' };
+  // Banderas por idioma, para las burbujas y carriles del Mediador.
+  const FLAGS = { es: '🇪🇸', en: '🇬🇧', pt: '🇧🇷' };
+  // Nombre del idioma en minúscula para frases tipo "Habla en portugués".
+  function nombreIdiomaMin(lang) {
+    return (LANG_NAMES[lang] || lang).toLowerCase();
+  }
 
   /* ============================================================
      INTERNACIONALIZACION DE LA INTERFAZ
@@ -294,7 +300,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function referenceLanguage() {
-    return practiceLanguage === 'en' ? 'es' : 'en';
+    // El idioma de referencia es el que el usuario ya sabe y en el que se
+    // muestra la interfaz. Como la interfaz solo existe en español e inglés,
+    // al practicar inglés o portugués la referencia es español (interfaz en
+    // español, como se quiere para que se entienda). Al practicar español,
+    // la referencia es inglés.
+    return practiceLanguage === 'es' ? 'en' : 'es';
   }
 
   const lockableControls = [
@@ -429,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function loadLanguage() {
     try {
       const guardado = localStorage.getItem(LANG_STORAGE_KEY);
-      return guardado === 'es' || guardado === 'en' ? guardado : 'en';
+      return (guardado === 'es' || guardado === 'en' || guardado === 'pt') ? guardado : 'en';
     } catch (err) {
       return 'en';
     }
@@ -460,6 +471,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof renderTemas === 'function') renderTemas();
     const dicLang = document.getElementById('dictation-lang');
     if (dicLang) dicLang.textContent = practica;
+
+    // Carriles del Mediador: el izquierdo es la referencia, el derecho la
+    // práctica. Se actualizan aquí (después de applyLocale, para que no los
+    // sobrescriba) con la bandera, la etiqueta y el placeholder correctos.
+    actualizarCarrilesMediador();
+  }
+
+  function actualizarCarrilesMediador() {
+    const ref = referenceLanguage();
+    const prac = practiceLanguage;
+
+    const flagEs = document.getElementById('mediator-flag-es');
+    const labelEs = document.getElementById('mediator-label-es');
+    const inputEs = document.getElementById('mediator-text-input-es');
+    if (flagEs) flagEs.textContent = FLAGS[ref] || '🏳️';
+    if (labelEs) labelEs.textContent = 'Habla en ' + nombreIdiomaMin(ref);
+    if (inputEs) inputEs.placeholder = 'O escribe en ' + nombreIdiomaMin(ref) + '…';
+
+    const flagEn = document.getElementById('mediator-flag-en');
+    const labelEn = document.getElementById('mediator-label-en');
+    const inputEn = document.getElementById('mediator-text-input-en');
+    if (flagEn) flagEn.textContent = FLAGS[prac] || '🏳️';
+    if (labelEn) labelEn.textContent = 'Habla en ' + nombreIdiomaMin(prac);
+    if (inputEn) inputEn.placeholder = 'O escribe en ' + nombreIdiomaMin(prac) + '…';
   }
 
   function setLanguage(nuevo) {
@@ -1128,7 +1163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // leccion deben estar en ese idioma para que sirvan de practica. Los
     // nombres de los conceptos y las etiquetas se traducen aparte, en el
     // cliente, al idioma de la interfaz.
-    const nombreIdioma = practiceLanguage === 'es' ? t('lang_es') : t('lang_en');
+    const nombreIdioma = (LANG_NAMES[practiceLanguage] || practiceLanguage).toLowerCase();
     originTitleEl.textContent = t('origin_of') + ' ' + nombreIdioma;
     originTextEl.textContent = t('tutorial_loading');
     conceptGridEl.innerHTML = '';
@@ -1704,8 +1739,9 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'mediator': {
         // getElementById asegura que se resuelven en tiempo de uso, no
         // en la carga del handler (los botones se declaran mas abajo).
-        const carril = ultimoMicMediador
-          || (practiceLanguage === 'en' ? 'en' : 'es');
+        // Los ids de carril siguen siendo 'es' (izquierdo = referencia) y
+        // 'en' (derecho = práctica). Por defecto arranca en el de práctica.
+        const carril = ultimoMicMediador || 'en';
         return document.getElementById('mediator-mic-' + carril);
       }
       default: return null;
@@ -1824,7 +1860,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tag = document.createElement('p');
     tag.className = 'lang-tag';
-    tag.textContent = entry.source_lang === 'es' ? 'Español → Inglés' : 'Inglés → Español';
+    tag.textContent = (LANG_NAMES[entry.source_lang] || entry.source_lang)
+      + ' → ' + (LANG_NAMES[entry.target_lang] || entry.target_lang);
     card.appendChild(tag);
 
     const originalP = document.createElement('p');
@@ -2363,12 +2400,16 @@ const newBtn = document.createElement('button');
 
   function construirBurbujaMediador(turno) {
     const bubble = document.createElement('div');
-    bubble.className = 'mediator-bubble mediator-bubble--' + turno.speaker_lang;
+    // La clase de estilo (izquierda/derecha) se basa en si el que habló es
+    // el idioma de referencia (carril izquierdo) o no, para no depender de
+    // que exista una clase CSS por cada idioma.
+    const lado = turno.speaker_lang === referenceLanguage() ? 'es' : 'en';
+    bubble.className = 'mediator-bubble mediator-bubble--' + lado;
 
     const head = document.createElement('div');
     head.className = 'mediator-bubble-head';
-    const banderaOrigen = turno.speaker_lang === 'es' ? '🇪🇸' : '🇬🇧';
-    const banderaDestino = turno.target_lang === 'es' ? '🇪🇸' : '🇬🇧';
+    const banderaOrigen = FLAGS[turno.speaker_lang] || '🏳️';
+    const banderaDestino = FLAGS[turno.target_lang] || '🏳️';
     head.textContent = banderaOrigen + '  →  ' + banderaDestino;
     bubble.appendChild(head);
 
@@ -2417,8 +2458,13 @@ const newBtn = document.createElement('button');
 
     try {
       const formData = new FormData();
+      // El idioma destino es el del OTRO carril: si habló el de referencia,
+      // se traduce al de práctica, y viceversa.
+      const destino = speakerLang === referenceLanguage()
+        ? practiceLanguage
+        : referenceLanguage();
       formData.append('speaker_lang', speakerLang);
-      formData.append('target_lang', speakerLang === 'es' ? 'en' : 'es');
+      formData.append('target_lang', destino);
       if (audioBlob) {
         formData.append('audio', audioBlob, `recording.${extensionForMimeType(audioBlob.type)}`);
       } else {
@@ -2471,15 +2517,18 @@ const newBtn = document.createElement('button');
   // que la barra espaciadora sepa a que carril dirigirse en Mediador.
   mediatorMicEsBtn.addEventListener('mousedown', () => { ultimoMicMediador = 'es'; });
   mediatorMicEnBtn.addEventListener('mousedown', () => { ultimoMicMediador = 'en'; });
+  // Carril izquierdo (id 'es') = idioma de referencia; carril derecho
+  // (id 'en') = idioma de práctica. Así, al practicar portugués, los
+  // carriles pasan a ser español ↔ portugués automáticamente.
   attachHoldToRecord(
     mediatorMicEsBtn,
-    ({ text, blob }) => enviarTurnoMediador({ speakerLang: 'es', text, audioBlob: blob }),
-    () => 'es',
+    ({ text, blob }) => enviarTurnoMediador({ speakerLang: referenceLanguage(), text, audioBlob: blob }),
+    () => referenceLanguage(),
   );
   attachHoldToRecord(
     mediatorMicEnBtn,
-    ({ text, blob }) => enviarTurnoMediador({ speakerLang: 'en', text, audioBlob: blob }),
-    () => 'en',
+    ({ text, blob }) => enviarTurnoMediador({ speakerLang: practiceLanguage, text, audioBlob: blob }),
+    () => practiceLanguage,
   );
 
   // Envio por texto: cada carril tiene su form, con su propio idioma.
@@ -2488,14 +2537,14 @@ const newBtn = document.createElement('button');
     const text = mediatorTextInputEs.value.trim();
     if (!text || isProcessing) return;
     mediatorTextInputEs.value = '';
-    enviarTurnoMediador({ speakerLang: 'es', text });
+    enviarTurnoMediador({ speakerLang: referenceLanguage(), text });
   });
   mediatorTextFormEn.addEventListener('submit', (evt) => {
     evt.preventDefault();
     const text = mediatorTextInputEn.value.trim();
     if (!text || isProcessing) return;
     mediatorTextInputEn.value = '';
-    enviarTurnoMediador({ speakerLang: 'en', text });
+    enviarTurnoMediador({ speakerLang: practiceLanguage, text });
   });
 
   mediatorClearBtn.addEventListener('click', () => {

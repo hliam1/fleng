@@ -30,6 +30,9 @@
         <button type="button" class="lang-btn" data-lang="es" id="lang-btn-es" role="radio" aria-checked="false">
           <span class="lang-btn-label">Español</span>
         </button>
+        <button type="button" class="lang-btn" data-lang="pt" id="lang-btn-pt" role="radio" aria-checked="false">
+          <span class="lang-btn-label">Portugués</span>
+        </button>
         <button type="button" id="help-btn" class="help-btn" aria-label="Cómo funcionan los idiomas">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
         </button>
@@ -212,8 +215,8 @@
 
           <div class="mediator-lane mediator-lane--es">
             <div class="mediator-lane-head">
-              <span class="mediator-flag" aria-hidden="true">🇪🇸</span>
-              <span class="mediator-lane-label" data-i18n="mediator_speaker_es">Habla en español</span>
+              <span class="mediator-flag" id="mediator-flag-es" aria-hidden="true">🇪🇸</span>
+              <span class="mediator-lane-label" id="mediator-label-es">Habla en español</span>
             </div>
             <button type="button" id="mediator-mic-es" class="mic-button mic-button--small" aria-label="Hablar en español">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
@@ -226,8 +229,8 @@
 
           <div class="mediator-lane mediator-lane--en">
             <div class="mediator-lane-head">
-              <span class="mediator-flag" aria-hidden="true">🇬🇧</span>
-              <span class="mediator-lane-label" data-i18n="mediator_speaker_en">Speak in English</span>
+              <span class="mediator-flag" id="mediator-flag-en" aria-hidden="true">🇬🇧</span>
+              <span class="mediator-lane-label" id="mediator-label-en">Speak in English</span>
             </div>
             <button type="button" id="mediator-mic-en" class="mic-button mic-button--small" aria-label="Speak in English">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>

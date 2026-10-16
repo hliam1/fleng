@@ -74,15 +74,22 @@ MODELS = {
         # Por eso hay una voz por idioma en vez de una sola global.
         "voice_en": _get("DEEPGRAM_VOICE_EN", "aura-2-thalia-en"),
         "voice_es": _get("DEEPGRAM_VOICE_ES", "aura-2-celeste-es"),
+        # OJO: Deepgram Aura-2 NO tiene voces en portugues (solo en, es, de,
+        # fr, nl, it, ja). Por eso voice_pt queda vacio y voice_for() hace
+        # fallback a la voz espanola (foneticamente lo mas cercano). Para una
+        # voz portuguesa de verdad, usa TTS_PROVIDER=openai, gemini o
+        # elevenlabs, que si son multilingues.
+        "voice_pt": _get("DEEPGRAM_VOICE_PT", ""),
     },
     "openai": {
         "fast": _get("OPENAI_FAST_MODEL", "gpt-4o-mini"),
         "smart": _get("OPENAI_SMART_MODEL", "gpt-4o"),
         "stt": _get("OPENAI_STT_MODEL", "whisper-1"),
         "tts": _get("OPENAI_TTS_MODEL", "tts-1"),
-        # Las voces de OpenAI si son multilingues: una sirve para ambos idiomas.
+        # Las voces de OpenAI si son multilingues: una sirve para los tres idiomas.
         "voice_en": _get("OPENAI_VOICE", "nova"),
         "voice_es": _get("OPENAI_VOICE", "nova"),
+        "voice_pt": _get("OPENAI_VOICE", "nova"),
     },
     "gemini": {
         "fast": _get("GEMINI_FAST_MODEL", "gemini-3.1-flash-lite"),
@@ -90,11 +97,13 @@ MODELS = {
         "tts": _get("GEMINI_TTS_MODEL", "gemini-3.1-flash-tts-preview"),
         "voice_en": _get("GEMINI_VOICE", "Kore"),
         "voice_es": _get("GEMINI_VOICE", "Kore"),
+        "voice_pt": _get("GEMINI_VOICE", "Kore"),
     },
     "elevenlabs": {
         "tts": _get("ELEVENLABS_TTS_MODEL", "eleven_flash_v2_5"),
         "voice_en": _get("ELEVENLABS_VOICE", "21m00Tcm4TlvDq8ikWAM"),
         "voice_es": _get("ELEVENLABS_VOICE", "21m00Tcm4TlvDq8ikWAM"),
+        "voice_pt": _get("ELEVENLABS_VOICE", "21m00Tcm4TlvDq8ikWAM"),
     },
 }
 
@@ -117,8 +126,17 @@ VALID_PROVIDERS = {
 
 def voice_for(language):
     """Devuelve la voz del proveedor TTS activo para el idioma dado."""
-    key = "voice_es" if language == "es" else "voice_en"
-    return MODELS[TTS_PROVIDER][key]
+    if language == "es":
+        key = "voice_es"
+    elif language == "pt":
+        key = "voice_pt"
+    else:
+        key = "voice_en"
+
+    modelos = MODELS[TTS_PROVIDER]
+    # Si el proveedor no tiene voz para ese idioma (p.ej. Deepgram no tiene
+    # portugues), se cae a la voz espanola, y si tampoco, a la inglesa.
+    return modelos.get(key) or modelos.get("voice_es") or modelos.get("voice_en")
 
 
 def config_errors():

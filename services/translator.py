@@ -4,7 +4,7 @@ Delega en la capa LLM, asi que respeta LLM_PROVIDER del .env.
 """
 from services import config, llm
 
-NOMBRES_IDIOMA = {"es": "espanol", "en": "ingles"}
+NOMBRES_IDIOMA = {"es": "espanol", "en": "ingles", "pt": "portugues"}
 
 
 def translate_text(text, source_lang, target_lang):

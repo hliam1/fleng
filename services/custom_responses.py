@@ -37,6 +37,11 @@ RESPUESTAS_PREDEFINIDAS = {
             r"who\s+created\s+you",
             r"who\s+made\s+you",
             r"quien\s+desarrollo",
+            r"quem\s+e\s+voce",
+            r"o\s+que\s+e\s+fleng",
+            r"quem\s+criou\s+voce",
+            r"quem\s+te\s+criou",
+            r"como\s+voce\s+se\s+chama",
         ],
         "respuesta_es": (
             "¡Soy Fleng! Tu maestro, tutor y asesor de idiomas personalizado. Fui creado específicamente por el equipo "
@@ -55,6 +60,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "texts, interactive dictation, evaluating your level, and giving you personalized feedback. I have an animated avatar "
             "that moves in sync with the audio to make learning more fun and engaging. How can I help you today?"
         ),
+        "respuesta_pt": "Eu sou o Fleng! O seu professor, tutor e orientador de idiomas personalizado. Fui criado especificamente pela equipe do Fleng do Instituto Tecnológico de Excelencia Educativa (ITEE) em Honduras. A equipe que me criou é composta por engenheiros, designers e linguistas apaixonados que decidiram me desenvolver porque acreditaram que aprender idiomas deveria ser divertido, acessível e pessoal. Posso te ajudar de muitas formas: praticando conversas em tempo real, traduzindo textos, fazendo ditados interativos, avaliando o seu nível e te dando feedback personalizado. Tenho um avatar animado que se move sincronizado com o áudio para tornar o aprendizado mais divertido e próximo. Como posso te ajudar hoje?",
     },
     # Evento importante hoy
     "evento": {
@@ -67,6 +73,7 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "¡Hoy es la Expotech 2026 Nasa Edition!",
         "respuesta_en": "Today is the Expotech 2026 Nasa Edition!",
+        "respuesta_pt": "Hoje é a Expotech 2026 Nasa Edition!",
     },
     # Equipo principal
     "equipo": {
@@ -79,6 +86,7 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "Ian Castellón, Kenji Martinez, Stephen Lopez, Héctor Pineda, Daniel Villeda, Milton López",
         "respuesta_en": "Ian Castellón, Kenji Martinez, Stephen Lopez, Héctor Pineda, Daniel Villeda, Milton López",
+        "respuesta_pt": "Ian Castellón, Kenji Martinez, Stephen Lopez, Héctor Pineda, Daniel Villeda, Milton López",
     },
     # Diseño de Fleng
     "diseño": {
@@ -91,6 +99,7 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "Stephen Lopez se encargó de todos los diseños de Fleng junto a Kenji Martinez",
         "respuesta_en": "Stephen Lopez was in charge of all of Fleng's designs along with Kenji Martinez",
+        "respuesta_pt": "Stephen Lopez ficou encarregado de todos os designs do Fleng junto com Kenji Martinez",
     },
     # Profesores preferidos del ITEE
     "profesores": {
@@ -102,6 +111,7 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "La licenciada Celeste Leiva y el Ing. Miklos Szabo",
         "respuesta_en": "Licenciada Celeste Leiva and Ing. Miklos Szabo",
+        "respuesta_pt": "A licenciada Celeste Leiva e o Eng. Miklos Szabo",
     },
     # Información del ITEE (captura CUALQUIER pregunta que mencione ITEE)
     "itee": {
@@ -133,6 +143,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "creativity and innovation. Currently celebrates 40 years of educational trajectory and "
             "is recognized as 'The Best Technological Institution in Honduras'. Website: iteesa.edu.hn"
         ),
+        "respuesta_pt": "O ITEE é o Instituto Tecnológico de Excelencia Educativa, a primeira instituição educacional privada em Honduras a oferecer carreiras técnicas. Fundado em 1986-1987, está localizado em San Pedro Sula, Cortés, Honduras. Desde o início tem figurado como o centro de formação do profissional ideal que Honduras precisa para o seu desenvolvimento. Oferecemos programas em Programação, Design, Robótica, Eletrônica, Eletromecânica e mais, combinando tecnologia, criatividade e inovação. Atualmente celebra 40 anos de trajetória educacional e é reconhecido como 'A Melhor Instituição Tecnológica de Honduras'. Site: iteesa.edu.hn",
     },
     # Aprender inglés en el ITEE
     "aprender_ingles_itee": {
@@ -146,6 +157,7 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "Puedes practicar inglés con la lic. Celeste Leiva o el lic. Miguel Reyes. ¡Recuerda que toda ayuda es bienvenida!",
         "respuesta_en": "You can practice English with Lic. Celeste Leiva or Lic. Miguel Reyes. Remember that all help is welcome!",
+        "respuesta_pt": "Você pode praticar inglês com a lic. Celeste Leiva ou o lic. Miguel Reyes. Lembre-se de que toda ajuda é bem-vinda!",
     },
     # Aprender español en el ITEE
     "aprender_espanol_itee": {
@@ -159,6 +171,7 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "Puedes practicar español con la lic. Yilari Rivera y la lic. Ana Calix.",
         "respuesta_en": "You can practice Spanish with Lic. Yilari Rivera and Lic. Ana Calix.",
+        "respuesta_pt": "Você pode praticar espanhol com a lic. Yilari Rivera e a lic. Ana Calix.",
     },
     # Fundador del ITEE
     "fundador_itee": {
@@ -183,6 +196,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "work in technology, engineering, and design. The ITEE currently celebrates over 40 years of educational excellence "
             "and is recognized as the best technological institution in the country."
         ),
+        "respuesta_pt": "O Instituto Tecnológico de Excelencia Educativa (ITEE) foi fundado em 1986 pelo engenheiro Raúl Peña Moreno em San Pedro Sula, Honduras. O ITEE nasceu com a missão de ser a primeira instituição educacional privada em Honduras a oferecer carreiras técnicas de qualidade. Desde então, tem sido um centro de formação de profissionais ideais que trabalham em tecnologia, engenharia e design. O ITEE atualmente celebra mais de 40 anos de excelência educacional e é reconhecido como a melhor instituição tecnológica do país.",
     },
     # Carreras de los creadores de Fleng
     "carreras_creadores": {
@@ -194,6 +208,7 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "Ian, Daniel, Héctor, Milton y Kenji son de Programación, mientras que Stephen es de Diseño Gráfico.",
         "respuesta_en": "Ian, Daniel, Héctor, Milton, and Kenji are from Programming, while Stephen is from Graphic Design.",
+        "respuesta_pt": "Ian, Daniel, Héctor, Milton e Kenji são de Programação, enquanto Stephen é de Design Gráfico.",
     },
     # Encargada de consejería
     "encargada_consejeria": {
@@ -208,6 +223,7 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "La consejera encargada es Elia Salgado. Si ves algo que no corresponde, ¡dile a ella!",
         "respuesta_en": "The counselor in charge is Elia Salgado. If you see something that doesn't fit, tell her!",
+        "respuesta_pt": "A conselheira responsável é Elia Salgado. Se você vir algo que não corresponde, fale com ela!",
     },
     # Proyectos en Expotech 2026
     "proyectos_expotech": {
@@ -220,6 +236,7 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "Puedes encontrar proyectos muy interesantes como: Techlife The experience, Hikari y Nous intelligence.",
         "respuesta_en": "You can find very interesting projects like: Techlife The experience, Hikari, and Nous intelligence.",
+        "respuesta_pt": "Você pode encontrar projetos muito interessantes como: Techlife The experience, Hikari e Nous intelligence.",
     },
     # Carreras disponibles en el ITEE
     "carreras_itee": {
@@ -232,16 +249,23 @@ RESPUESTAS_PREDEFINIDAS = {
         ],
         "respuesta_es": "Encuentras las carreras de Mecatrónica, Electromecánica, Diseño Gráfico y Programación.",
         "respuesta_en": "You can find the careers in Mechatronics, Electromechanics, Graphic Design, and Programming.",
+        "respuesta_pt": "Você encontra as carreiras de Mecatrônica, Eletromecânica, Design Gráfico e Programação.",
     },
     # Beta tester original
     "beta_tester": {
         "patrones": [
+            r"beta\s+tester",
             r"quien\s+es\s+el\s+beta\s+tester",
+            r"quien\s+fue\s+el\s+beta\s+tester",
             r"beta\s+tester\s+original",
+            r"beta\s+tester\s+principal",
             r"primer\s+beta\s+tester",
             r"who\s+is\s+the\s+beta\s+tester",
+            r"who\s+was\s+the\s+beta\s+tester",
             r"original\s+beta\s+tester",
+            r"quem\s+foi\s+o\s+beta\s+tester",
             r"elkin\s+sierra",
+            r"elkin",
         ],
         "respuesta_es": (
             "El beta tester original fue Elkin Sierra. Su retroalimentación fue invaluable durante las primeras fases "
@@ -254,6 +278,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "development. Elkin helped us identify bugs, suggest interface improvements, and refine the learning experience. "
             "His contribution as our first user was essential for Fleng to become the application it is today. Thank you, Elkin!"
         ),
+        "respuesta_pt": "O beta tester principal e original do Fleng foi Elkin Sierra. O feedback dele foi inestimável durante as primeiras fases de desenvolvimento. Elkin foi quem nos ajudou a identificar bugs críticos, sugerir melhorias na interface e aperfeiçoar a experiência de aprendizado dos usuários. A contribuição dele como primeiro usuário foi fundamental para que o Fleng se tornasse o aplicativo robusto e refinado que é hoje. O trabalho de testes dele foi essencial antes do lançamento oficial. Obrigado, Elkin Sierra!",
     },
     # Ian Castellón - Programador principal
     "ian_castellon": {
@@ -279,6 +304,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "integration of AI models (Groq, Gemini, OpenAI), and the implementation of all API routes that make Fleng "
             "work. His programming work was essential to turning Fleng's vision into reality."
         ),
+        "respuesta_pt": "Ian Castellón foi o programador principal do Fleng. É o responsável por toda a arquitetura técnica e desenvolvimento das funcionalidades centrais do aplicativo. Ian liderou o desenvolvimento backend com Flask, a integração dos modelos de IA (Groq, Gemini, OpenAI) e a implementação de todas as rotas API que tornam o Fleng possível. O trabalho dele em programação foi fundamental para transformar a visão do Fleng em realidade.",
     },
     # Stephen Lopez - Diseñador
     "stephen_lopez": {
@@ -303,6 +329,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "the complete visual experience. His graphic design work ensured that Fleng not only works well, but also looks "
             "beautiful and is enjoyable to use."
         ),
+        "respuesta_pt": "Stephen López foi o criador do design do Fleng. É o responsável por toda a interface visual, a experiência do usuário e o aspecto estético do aplicativo. Stephen desenhou o avatar da coruja (eu), as cores, tipografias, layouts e toda a experiência visual. O trabalho dele em design gráfico fez com que o Fleng não só funcione bem, mas também fique bonito e seja agradável de usar.",
     },
     # Kenji Martinez - Vida y redes
     "kenji_martinez": {
@@ -325,6 +352,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "Kenji also worked on network strategy and presenting Fleng on different platforms. His contribution was key to giving "
             "Fleng a consistent and attractive visual identity."
         ),
+        "respuesta_pt": "Kenji Martínez foi o responsável por dar vida ao Fleng através de designs e redes. Colaborou com Stephen López na criação de elementos visuais adicionais, animações e na coesão visual do aplicativo. Kenji também trabalhou em estratégia de redes e na apresentação do Fleng em diferentes plataformas. A contribuição dele foi fundamental para que o Fleng tivesse uma identidade visual consistente e atraente.",
     },
     # Milton López - Programación y documentación
     "milton_lopez": {
@@ -347,6 +375,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "for documenting the entire project: from technical architecture to processes and tutorials. His documentation work is "
             "vital for other developers to understand and contribute to Fleng."
         ),
+        "respuesta_pt": "Milton López foi assistente na programação e o responsável por toda a documentação do Fleng. Trabalhou junto com Ian Castellón no desenvolvimento do código, auxiliando na implementação de funcionalidades e debugging. Além disso, Milton foi responsável por documentar todo o projeto: desde a arquitetura técnica até os processos e tutoriais. O trabalho dele em documentação é vital para que outros desenvolvedores possam entender e contribuir com o Fleng.",
     },
     # Daniel Villeda - Presentación e información
     "daniel_villeda": {
@@ -369,6 +398,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "and accessible information, and ensured that anyone could understand Fleng's proposal. His work in communication and "
             "writing was essential to conveying the vision and value of the application."
         ),
+        "respuesta_pt": "Daniel Villeda foi o responsável por me apresentar (ao Fleng) e redigir informações sobre o projeto. Trabalhou na comunicação eficaz do que é o Fleng, para que serve e como usá-lo. Daniel criou textos descritivos, informações claras e acessíveis, e garantiu que qualquer pessoa pudesse entender a proposta do Fleng. O trabalho dele em comunicação e redação foi essencial para transmitir a visão e o valor do aplicativo.",
     },
     # Héctor Pineda - Información del proyecto
     "hector_pineda": {
@@ -391,6 +421,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "objectives, methodology, processes, achievements, and learnings. His work in writing project information was fundamental "
             "to formalizing Fleng as a serious and professional project."
         ),
+        "respuesta_pt": "Héctor Pineda foi o responsável por redigir todas as minhas informações como projeto. Trabalhou na documentação detalhada do Fleng como iniciativa acadêmica e tecnológica. Héctor garantiu que todas as informações do projeto fossem registradas adequadamente: objetivos, metodologia, processos, conquistas e aprendizados. O trabalho dele em redação de informações foi fundamental para formalizar o Fleng como um projeto sério e profissional.",
     },
     # Creadores de Fleng (se activa cuando menciona "creo" + "fleng")
     "creadores_fleng": {
@@ -401,6 +432,9 @@ RESPUESTAS_PREDEFINIDAS = {
             r"quienes\s+crearon\s+fleng",
             r"who\s+created\s+fleng",
             r"who\s+made\s+fleng",
+            r"quem\s+criou\s+o?\s*fleng",
+            r"quem\s+fez\s+o?\s*fleng",
+            r"quem\s+desenvolveu\s+o?\s*fleng",
         ],
         "respuesta_es": (
             "Fleng fue creado por un equipo de seis miembros del Instituto Tecnológico de Excelencia Educativa (ITEE): "
@@ -417,6 +451,7 @@ RESPUESTAS_PREDEFINIDAS = {
             "and Héctor Pineda (project information). Together, this passionate team of engineers, designers, and "
             "linguists developed Fleng because they believed that learning languages should be fun, accessible, and personal."
         ),
+        "respuesta_pt": "O Fleng foi criado por uma equipe de seis membros do Instituto Tecnológico de Excelencia Educativa (ITEE): Ian Castellón (programador principal), Stephen López (designer), Kenji Martínez (designs e redes), Milton López (programação assistente e documentação), Daniel Villeda (apresentação e informação), e Héctor Pineda (informação do projeto). Juntos, esta equipe apaixonada de engenheiros, designers e linguistas desenvolveram o Fleng porque acreditaram que aprender idiomas deveria ser divertido, acessível e pessoal.",
     },
 }
 
@@ -466,6 +501,12 @@ def obtener_respuesta_personalizada(pregunta, idioma="es"):
         patrones = datos.get("patrones", [])
         clave_respuesta = f"respuesta_{idioma}"
         respuesta = datos.get(clave_respuesta)
+
+        # Fallback: si no hay respuesta en ese idioma (p.ej. portugués sin
+        # traducir en alguna categoría), se usa la española, que para un
+        # lusófono es mucho más entendible que el inglés o que nada.
+        if not respuesta:
+            respuesta = datos.get("respuesta_es")
 
         if not respuesta:
             continue

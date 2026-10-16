@@ -14,10 +14,12 @@ MEJORAS DE PRECISION:
 """
 from services import clients, config
 
-NOMBRES_IDIOMA = {"es": "espanol", "en": "ingles"}
+NOMBRES_IDIOMA = {"es": "espanol", "en": "ingles", "pt": "portugues"}
 
 # Codigo de idioma que espera cada proveedor.
-_LOCALES = {"es": "es-ES", "en": "en-US"}
+# Para portugues se usa pt-BR (Brasil) por ser la variante mas extendida;
+# Whisper igual entiende portugues de Portugal con el mismo codigo "pt".
+_LOCALES = {"es": "es-ES", "en": "en-US", "pt": "pt-BR"}
 
 
 def prefiere_navegador():
@@ -77,6 +79,14 @@ _PROMPTS_CONTEXTO = {
         "family, work, food, travel, plans. The speaker may make pronunciation "
         "or grammar mistakes that should be transcribed as they sound. "
         "Example: Hello, my name is Ian. Today I want to practice my English."
+    ),
+    "pt": (
+        "Transcricao de uma conversa em portugues de um estudante que "
+        "pratica o idioma. Fala de temas do dia a dia: cumprimentos, "
+        "apresentacoes, familia, trabalho, comida, viagens, planos. Pode "
+        "cometer erros de pronuncia ou gramatica que devem ser transcritos "
+        "tal como soam. Exemplo: Ola, meu nome e Ian. Hoje quero praticar "
+        "o meu portugues."
     ),
 }
 
@@ -141,6 +151,13 @@ _ALUCINACIONES = {
         "subscribe to the channel",
         "please subscribe",
         "thank you.",
+    ],
+    "pt": [
+        "legendas pela comunidade amara.org",
+        "obrigado por assistir",
+        "obrigado por ver o video",
+        "inscreva-se no canal",
+        "deixe seu like",
     ],
 }
 

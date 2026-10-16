@@ -3,7 +3,7 @@ Conversacion libre con IA y evaluacion del desempeno del usuario.
 """
 from services import config, llm
 
-NOMBRES_IDIOMA = {"es": "espanol", "en": "ingles"}
+NOMBRES_IDIOMA = {"es": "espanol", "en": "ingles", "pt": "portugues"}
 
 TEMAS = {
     "libre": "",

@@ -214,6 +214,110 @@ CONTENIDO = {
             },
         ],
     },
+    "pt": {
+        # Practicando portugues, la interfaz va en espanol -> se muestra
+        # "origen" (en espanol). Las entradas son (portugues, español).
+        "origen": (
+            "El portugués viene del latín vulgar que llegó a la península "
+            "ibérica con los romanos, igual que el español. Se consolidó en el "
+            "oeste peninsular (la actual Galicia y Portugal) y hoy lo hablan "
+            "más de 260 millones de personas, siendo Brasil el país con más "
+            "hablantes. Curiosidad: portugués y español comparten cerca del "
+            "90% de su vocabulario, aunque suenan bastante distintos."
+        ),
+        "origen_alt": (
+            "Portuguese comes from the Vulgar Latin that reached the Iberian "
+            "Peninsula with the Romans, just like Spanish. It took shape in the "
+            "west of the peninsula (today's Galicia and Portugal) and is now "
+            "spoken by over 260 million people, with Brazil having the most "
+            "speakers. Fun fact: Portuguese and Spanish share about 90% of "
+            "their vocabulary, though they sound quite different."
+        ),
+        "conceptos": [
+            {
+                "id": "saludos",
+                "nombre": "Saludos",
+                "icono": "saludo",
+                "entradas": [
+                    ("Olá", "Hola"),
+                    ("Bom dia", "Buenos días"),
+                    ("Boa tarde", "Buenas tardes"),
+                    ("Boa noite", "Buenas noches"),
+                    ("Como vai?", "¿Cómo estás?"),
+                    ("Prazer em conhecê-lo", "Mucho gusto"),
+                    ("Até logo", "Hasta luego"),
+                    ("Tchau", "Adiós"),
+                ],
+            },
+            {
+                "id": "numeros",
+                "nombre": "Números",
+                "icono": "numero",
+                "entradas": [
+                    ("Um", "Uno"),
+                    ("Dois", "Dos"),
+                    ("Três", "Tres"),
+                    ("Quatro", "Cuatro"),
+                    ("Cinco", "Cinco"),
+                    ("Dez", "Diez"),
+                    ("Vinte", "Veinte"),
+                    ("Cem", "Cien"),
+                ],
+            },
+            {
+                "id": "cortesia",
+                "nombre": "Cortesía",
+                "icono": "cortesia",
+                "entradas": [
+                    ("Por favor", "Por favor"),
+                    ("Obrigado", "Gracias (hombre)"),
+                    ("Obrigada", "Gracias (mujer)"),
+                    ("De nada", "De nada"),
+                    ("Com licença", "Disculpe"),
+                    ("Desculpe", "Lo siento"),
+                    ("Posso?", "¿Puedo?"),
+                ],
+            },
+            {
+                "id": "verbos-ser-estar",
+                "nombre": "Ser y estar",
+                "icono": "gramatica",
+                "entradas": [
+                    ("Eu sou", "Yo soy (permanente)"),
+                    ("Eu estou", "Yo estoy (temporal)"),
+                    ("Você é", "Tú eres"),
+                    ("Ele está", "Él está"),
+                    ("Nós somos", "Nosotros somos"),
+                    ("Eles estão", "Ellos están"),
+                ],
+            },
+            {
+                "id": "preguntas",
+                "nombre": "Preguntas",
+                "icono": "pregunta",
+                "entradas": [
+                    ("O quê?", "¿Qué?"),
+                    ("Onde?", "¿Dónde?"),
+                    ("Quando?", "¿Cuándo?"),
+                    ("Quem?", "¿Quién?"),
+                    ("Por quê?", "¿Por qué?"),
+                    ("Quanto?", "¿Cuánto?"),
+                ],
+            },
+            {
+                "id": "frases-utiles",
+                "nombre": "Frases útiles",
+                "icono": "frase",
+                "entradas": [
+                    ("Não entendo", "No entiendo"),
+                    ("Pode repetir?", "¿Puede repetirlo?"),
+                    ("Como se diz...?", "¿Cómo se dice...?"),
+                    ("Estou aprendendo português", "Estoy aprendiendo portugués"),
+                    ("Fale mais devagar, por favor", "Hable más despacio, por favor"),
+                ],
+            },
+        ],
+    },
 }
 
 

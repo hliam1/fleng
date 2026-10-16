@@ -33,7 +33,9 @@ def synthesize_speech(text, language="en", slow=False):
     """
     Convierte texto en audio.
 
-    language: "es" o "en". Decide la voz.
+    language: "es", "en" o "pt". Decide la voz.
+             (Portugues: con Deepgram cae a la voz espanola porque Aura-2
+              no tiene portugues; con openai/gemini/elevenlabs suena nativo.)
     slow: cuando True, lee mas despacio. Se usa en las frases del tutorial
       para que un principiante alcance a distinguir cada palabra. Cada
       proveedor lo aplica a su manera (parametro nativo o instruccion).
@@ -43,6 +45,14 @@ def synthesize_speech(text, language="en", slow=False):
         raise ValueError("No hay texto para convertir en voz.")
 
     proveedor = config.TTS_PROVIDER
+
+    # El portugues SIEMPRE usa ElevenLabs: es multilingue y suena nativo,
+    # mientras que Deepgram (el proveedor por defecto) no tiene portugues.
+    # Solo se fuerza si hay clave de ElevenLabs configurada; si no, se queda
+    # con el proveedor normal (que caera a la voz espanola como respaldo).
+    if language == "pt" and config.ELEVENLABS_API_KEY:
+        proveedor = "elevenlabs"
+
     generadores = {
         "deepgram": _deepgram_tts,
         "openai": _openai_tts,
